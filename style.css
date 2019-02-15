@@ -6,40 +6,62 @@
 	border: 3px solid #000000 ;
 	/*padding: 10px;*/
 }
-.topLeft{
+/*.topLeft{
 	position: absolute;
 	margin-left:0px;
 	margin-top:0px;
 	height:250px;
 	width:250px;
 	/*background-color: powderblue;*/
-}
-.topRight{
-	position: absolute;
-	margin-left:250px;
-	margin-top:0px;
-	height:250px;
-	width:250px;
-	background-color: red;
-}
-.bottomLeft{
-	position: absolute;
-	margin-left:0px;
-	margin-top:250px;
-	height:250px;
-	width:250px;
-	background-color: purple;
-}
+	}*/
+	.topRight{
+		position: absolute;
+		margin-left:250px;
+		margin-top:0px;
+		height:250px;
+		width:250px;
+		background-color: red;
+	}
+	.bottomLeft{
+		position: absolute;
+		margin-left:0px;
+		margin-top:0px;
+		height:250px;
+		width:250px;
+		background-color: purple;
+	}
 
-.bottomRight{
-	position: absolute;
-	margin-left:250px;
-	margin-top:250px;
-	height:250px;
-	width:250px;
-	background-color: orange;
-} 
-.moveDown{
-	position: absolute;
-	margin-top: 300px;
-}
+	.bottomRight{
+		position: absolute;
+		margin-left:250px;
+		margin-top:250px;
+		height:250px;
+		width:250px;
+		background-color: orange;
+	} 
+	.moveDown{
+		position: absolute;
+		margin-top: 300px;
+	}
+	.piece{
+		margin-left: -400px
+		margin-top: -400px
+	}
+	#board {
+		position: absolute;
+		z-index: 9;
+		background-color: #f1f1f1;
+		text-align: center;
+		border: 1px solid #d3d3d3;
+		width:140px;
+		height:140px;
+		cursor: move;
+	}
+
+	#boardheader {
+		padding: 0px;
+		
+		z-index: 10;
+		background-color: #2196F3;
+		color: #fff;
+	}

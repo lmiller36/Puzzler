@@ -14,18 +14,21 @@ constructor(length,width,vertical_pieces,horizontal_pieces) {
 	this.width = width;
 	this.vertical_pieces = vertical_pieces;
 	this.horizontal_pieces = horizontal_pieces;
-	this.puzzle = this.buildPuzzle();
+	this.puzzle_pieces = this.buildPuzzle();
 
-	var collection = document.getElementById('topLeft');
-	console.log(collection)
+	var collection = document.getElementById('piece');
 // var a = document.createElement('div');
-for (var i = 0; i<vertical_pieces;i++){
-	for (var j = 0; j<horizontal_pieces;j++){
-		var a = this.puzzle[i][j].getPiece();
-	// a.innerHTML = 'some text';
-	collection.appendChild(a);
-}
-}
+// for (var i = 0; i<vertical_pieces;i++){
+// 	for (var j = 0; j<horizontal_pieces;j++){
+ 		var a = this.puzzle_pieces[0][0].getPiece();
+ 		 		var b = this.puzzle_pieces[0][0].getPiece();
+	//dragElement(a);
+
+// 	// a.innerHTML = 'some text';
+ 	collection.appendChild(a);
+
+// }
+// }
 
 	// var newdiv = document.createElement("examplePiece");
 	// newdiv.appendChild(document.createElement(this.puzzle[0][0].getPiece()));
@@ -55,7 +58,6 @@ buildPuzzle(){
 			if(i == 0) top = BorderType.FLAT_HORIZONTAL;
 			else {
 				//previous row determined its bottom (this piece's top)
-				console.log(puzzle_pieces[i - 1][j])
 				top = puzzle_pieces[i - 1][j].bottom;
 			}
 
@@ -84,7 +86,6 @@ buildPuzzle(){
 		puzzle_pieces.push(row);
 	}
 
-	console.log(puzzle_pieces)
 
 	return puzzle_pieces;
 }
@@ -100,17 +101,27 @@ class PuzzlePiece {
 	}
 
 	getPiece(){
-		let img_div =  document.createElement('div');
+		var img_div =  document.createElement('div');
+		img_div.id = "pieceheader"
+		// img_div.style.cursor = "move";
+		// img_div.onclick = function() {
+		// 	console.log('Click just happened');
+		// };
+
+		//var m = document.getElementById('move');
+
+		// img_div.style.height = "500px";
+		// img_div.style.width = 100;
 		let top = getBorders(this.top,EdgeType.TOP)
 		let bottom = getBorders(this.bottom,EdgeType.BOTTOM)
 		let right = getBorders(this.right,EdgeType.RIGHT)
 		let left = getBorders(this.left,EdgeType.LEFT)
 
 		let svg = `<?xml version="1.0" encoding="UTF-8"?>
-		<svg xmlns="http://www.w3.org/2000/svg" width="1000px" height="1000px" >
-		<g id="WolfiesPuzzleGenerator" transform="scale(3.779528749457873844999636220357925)"><title>Wolfie's Puzzle Generator</title>
-		<g id="Puzzle"><title>Puzzle</title>
-		<g id="RowGroup"><title>RowGroup</title>
+		<svg xmlns="http://www.w3.org/2000/svg" width="140px" height="140px" >
+	
+		<g id="Puzzle">
+		<g id="RowGroup">
 		`
 		+
 		top
@@ -133,7 +144,6 @@ class PuzzlePiece {
 
 		</svg>`	
 		img_div.innerHTML = svg
-		console.log(svg)
 		  //img_div.innerHTML = "<img src = \"10x10 puzzl.svg\" alt=\"triangle with all three sides equal\" height=\"400px\"width=\"600px\"\\>"
 		  return img_div;
 		}
@@ -187,23 +197,23 @@ class PuzzlePiece {
 
 		//translate up or down
 		if(edge_type == EdgeType.BOTTOM) {
-			border = border.replace("M 100 100","M 100 200")
+			border = border.replace("M 10 10","M 10 110")
 		}
 		else if(edge_type == EdgeType.RIGHT){
-			border = border.replace("M 100 100","M 200 100")
+			border = border.replace("M 10 10","M 110 10")
 		} 
 		return border;
 	}
 
 	const flat_horizontal = `<path id="flat_horizontal"  fill="none" stroke="red" stroke-width=".5px" d="
-	M 100 100                                                  
+	M 10 10                                                  
 	l
 	100 0                                                                                                                            
 	"
 	/>`;
 
 	const flat_vertical = `<path id="flat_vertical"  fill="none" stroke="red" stroke-width=".5px" d="
-	M 100 100                                                  
+	M 10 10                                                  
 	l
 	0 100                                                                                                                            
 	"
@@ -211,7 +221,7 @@ class PuzzlePiece {
 
 
 	const horizontal1 = `<path id="horizontal1"  fill="none" stroke="red" stroke-width=".5px" d="
-	M 100 100
+	M 10 10
 	c 
 	8.938547,-1.815642 24.20857,-2.793296 30.81937,0 
 	4.003725,1.606145 8.566108,-0.2793296 6.610801,-2.513967 
@@ -224,7 +234,7 @@ class PuzzlePiece {
 	"
 	/>`
 	const horizontal2 = `<path id="horizontal2"  fill="none" stroke="red" stroke-width=".5px" d="                                                                                                                        
-	M 100 100
+	M 10 10
 	c 
 	8.938547,1.815642 24.20857,2.793296 30.81937,0 
 	4.003725,-1.606145 8.566108,0.2793296 6.610801,2.513967 
@@ -238,7 +248,7 @@ class PuzzlePiece {
 	/>`
 
 	const vertical1 = `<path id="vertical1"  fill="none" stroke="red" stroke-width=".5px" d="
-	M 100 100
+	M 10 10
 	c 
 	1.815642,8.938547 2.793296,24.20857 0,30.81937 
 	-1.606145,4.003725 0.2793296,8.566108 2.513967,6.610801 
@@ -251,7 +261,7 @@ class PuzzlePiece {
 	"
 	/>`
 	const vertical2 = `<path id="vertical2"  fill="none" stroke="red" stroke-width=".5px" d="
-	M 100 100
+	M 10 10
 	c 
 	-1.815642,8.938547 -2.793296,24.20857 0,30.81937 
 	1.606145,4.003725 -0.2793296,8.566108 -2.513967,6.610801 
