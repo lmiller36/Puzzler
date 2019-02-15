@@ -43,16 +43,13 @@
 		position: absolute;
 		margin-top: 300px;
 	}
-	.piece{
-		margin-left: -400px
-		margin-top: -400px
-	}
+
 	#board {
 		position: absolute;
 		z-index: 9;
-		background-color: #f1f1f1;
+		background-color: #transparent;
 		text-align: center;
-		border: 1px solid #d3d3d3;
+		border: 1px solid #transparent;
 		width:140px;
 		height:140px;
 		cursor: move;
@@ -62,17 +59,17 @@
 		padding: 0px;
 		
 		z-index: 10;
-		background-color: #2196F3;
+		background-color: #transparent;
 		color: #fff;
 	}
 
 		#board2 {
-		
+
 		position: absolute;
 		z-index: 9;
-		background-color: #f1f1f1;
+		background-color: #transparent;
 		text-align: center;
-		border: 1px solid #d3d3d3;
+		border: 1px solid #transparent;
 		width:140px;
 		height:140px;
 		cursor: move;
@@ -82,6 +79,6 @@
 		padding: 0px;
 		
 		z-index: 10;
-		background-color: #2196F3;
+		background-color: #transparent;
 		color: #fff;
 	}

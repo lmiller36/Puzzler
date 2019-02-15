@@ -27,7 +27,7 @@ constructor(length,width,vertical_pieces,horizontal_pieces) {
 collection.appendChild(a);
 
 var collection2 = document.getElementById('piece2');
-var b = this.puzzle_pieces[0][1].getPiece();
+var b = this.puzzle_pieces[1][1].getPiece();
 collection2.appendChild(b);
 
 
@@ -123,7 +123,7 @@ class PuzzlePiece {
 		let left = getBorders(this.left,EdgeType.LEFT)
 
 		let svg = `<?xml version="1.0" encoding="UTF-8"?>
-		<svg xmlns="http://www.w3.org/2000/svg" width="140px" height="140px" >
+		<svg xmlns="http://www.w3.org/2000/svg" width="170px" height="170px" >
 
 		<g id="Puzzle">
 		<g id="RowGroup">
@@ -202,23 +202,23 @@ class PuzzlePiece {
 
 		//translate up or down
 		if(edge_type == EdgeType.BOTTOM) {
-			border = border.replace("M 10 10","M 10 110")
+			border = border.replace("M 30 30","M 30 130")
 		}
 		else if(edge_type == EdgeType.RIGHT){
-			border = border.replace("M 10 10","M 110 10")
+			border = border.replace("M 30 30","M 130 30")
 		} 
 		return border;
 	}
 
 	const flat_horizontal = `<path id="flat_horizontal"  fill="none" stroke="red" stroke-width=".5px" d="
-	M 10 10                                                  
+	M 30 30                                                  
 	l
 	100 0                                                                                                                            
 	"
 	/>`;
 
 	const flat_vertical = `<path id="flat_vertical"  fill="none" stroke="red" stroke-width=".5px" d="
-	M 10 10                                                  
+	M 30 30                                                  
 	l
 	0 100                                                                                                                            
 	"
@@ -226,7 +226,7 @@ class PuzzlePiece {
 
 
 	const horizontal1 = `<path id="horizontal1"  fill="none" stroke="red" stroke-width=".5px" d="
-	M 10 10
+	M 30 30
 	c 
 	8.938547,-1.815642 24.20857,-2.793296 30.81937,0 
 	4.003725,1.606145 8.566108,-0.2793296 6.610801,-2.513967 
@@ -239,7 +239,7 @@ class PuzzlePiece {
 	"
 	/>`
 	const horizontal2 = `<path id="horizontal2"  fill="none" stroke="red" stroke-width=".5px" d="                                                                                                                        
-	M 10 10
+	M 30 30
 	c 
 	8.938547,1.815642 24.20857,2.793296 30.81937,0 
 	4.003725,-1.606145 8.566108,0.2793296 6.610801,2.513967 
@@ -253,7 +253,7 @@ class PuzzlePiece {
 	/>`
 
 	const vertical1 = `<path id="vertical1"  fill="none" stroke="red" stroke-width=".5px" d="
-	M 10 10
+	M 30 30
 	c 
 	1.815642,8.938547 2.793296,24.20857 0,30.81937 
 	-1.606145,4.003725 0.2793296,8.566108 2.513967,6.610801 
@@ -266,7 +266,7 @@ class PuzzlePiece {
 	"
 	/>`
 	const vertical2 = `<path id="vertical2"  fill="none" stroke="red" stroke-width=".5px" d="
-	M 10 10
+	M 30 30
 	c 
 	-1.815642,8.938547 -2.793296,24.20857 0,30.81937 
 	1.606145,4.003725 -0.2793296,8.566108 -2.513967,6.610801 
