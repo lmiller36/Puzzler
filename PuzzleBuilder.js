@@ -20,12 +20,17 @@ constructor(length,width,vertical_pieces,horizontal_pieces) {
 // var a = document.createElement('div');
 // for (var i = 0; i<vertical_pieces;i++){
 // 	for (var j = 0; j<horizontal_pieces;j++){
- 		var a = this.puzzle_pieces[0][0].getPiece();
- 		 		var b = this.puzzle_pieces[0][0].getPiece();
+	var a = this.puzzle_pieces[0][0].getPiece();
 	//dragElement(a);
 
 // 	// a.innerHTML = 'some text';
- 	collection.appendChild(a);
+collection.appendChild(a);
+
+var collection2 = document.getElementById('piece2');
+var b = this.puzzle_pieces[0][1].getPiece();
+collection2.appendChild(b);
+
+
 
 // }
 // }
@@ -119,7 +124,7 @@ class PuzzlePiece {
 
 		let svg = `<?xml version="1.0" encoding="UTF-8"?>
 		<svg xmlns="http://www.w3.org/2000/svg" width="140px" height="140px" >
-	
+
 		<g id="Puzzle">
 		<g id="RowGroup">
 		`
