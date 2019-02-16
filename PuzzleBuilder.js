@@ -9,8 +9,8 @@ horizontal_pieces
 **/
 
 
-constructor(length,width,vertical_pieces,horizontal_pieces) {
-	this.length = length;
+constructor(height,width,vertical_pieces,horizontal_pieces) {
+	this.height = height;
 	this.width = width;
 	this.vertical_pieces = vertical_pieces;
 	this.horizontal_pieces = horizontal_pieces;
@@ -83,6 +83,11 @@ randomVertical(){
 buildPuzzle(){
 	const edges_in_col = this.horizontal_pieces;
 	const edges_in_row = this.vertical_pieces ;
+	const piece_height = (this.height+0.0) / this.vertical_pieces;
+	const piece_width = (this.width+0.0) / this.horizontal_pieces;
+
+	console.log(piece_height+":"+piece_width);
+
 	var puzzle_pieces = [];
 	for(var i = 0; i < edges_in_row; i++) {
 		let row = [];
@@ -114,7 +119,7 @@ buildPuzzle(){
 				right = this.randomVertical();
 			}
 
-			let puzzle_piece = new PuzzlePiece(top,bottom,left,right,i,j);
+			let puzzle_piece = new PuzzlePiece(top,bottom,left,right,i,j,piece_height,piece_width);
 			row.push(puzzle_piece)
 		}
 		puzzle_pieces.push(row);
@@ -127,13 +132,15 @@ buildPuzzle(){
 }
 
 class PuzzlePiece {
-	constructor(top_shape,bottom_shape,left_shape,right_shape,i,j){
+	constructor(top_shape,bottom_shape,left_shape,right_shape,i,j,piece_height,piece_width){
 		this.top = top_shape;
 		this.bottom = bottom_shape;
 		this.right = right_shape;
 		this.left = left_shape;
 		this.row = i;
 		this.col = j
+		this.width = piece_width;
+		this.height = piece_height
 	}
 
 	getPiece(){
@@ -152,16 +159,17 @@ class PuzzlePiece {
 		let bottom = getBorders(this.bottom,EdgeType.BOTTOM)
 		let right = getBorders(this.right,EdgeType.RIGHT)
 		let left = getBorders(this.left,EdgeType.LEFT)
+		let img_name = "img_"+this.row+"_"+this.col;
 
-		let svg = `<?xml version="1.0" encoding="UTF-8"?>
+		var svg = `<?xml version="1.0" encoding="UTF-8"?>
 		<svg xmlns="http://www.w3.org/2000/svg" width="170px" height="170px" >
 		<defs>
-		<pattern id="img1" patternUnits="userSpaceOnUse" width="600" height="600">
-		<image xlink:href="https://ippcdn-ippawards.netdna-ssl.com/wp-content/uploads/2018/07/49-1st-SUNSET-Sara-Ronkainen-1.jpg" x="-250" y="-50"
+		<pattern id="`+img_name+`" patternUnits="userSpaceOnUse" width="600" height="600">
+		<image xlink:href="https://ippcdn-ippawards.netdna-ssl.com/wp-content/uploads/2018/07/49-1st-SUNSET-Sara-Ronkainen-1.jpg" x="0" y="0"
 		width="600" height="600" />
 		</pattern>
 		</defs>  
-		<rect y="30" id="svg_1" height="100" width="100" x="30" stroke-width="0" stroke="#000" fill="url(#img1)"/>
+		<rect y="30" id="svg_1" height="100" width="100" x="30" stroke-width="0" stroke="#000" fill="url(#`+img_name+`)"/>
 
 		<g id="Puzzle">
 		<g id="RowGroup">
@@ -187,6 +195,9 @@ class PuzzlePiece {
 
 		</svg>`	
 
+		//adjust picture location
+		svg = svg.replace("x=\"0\" y=\"0\"","x=\""+(this.col*this.width * -1)+"\" y=\""+(this.row*this.height*-1)+"\"");
+		console.log(svg)
 		img_div.innerHTML = svg
 		  //img_div.innerHTML = "<img src = \"10x10 puzzl.svg\" alt=\"triangle with all three sides equal\" height=\"400px\"width=\"600px\"\\>"
 		  return img_div;
