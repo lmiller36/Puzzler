@@ -16,21 +16,50 @@ constructor(length,width,vertical_pieces,horizontal_pieces) {
 	this.horizontal_pieces = horizontal_pieces;
 	this.puzzle_pieces = this.buildPuzzle();
 
-	var collection = document.getElementById('piece');
-// var a = document.createElement('div');
-// for (var i = 0; i<vertical_pieces;i++){
-// 	for (var j = 0; j<horizontal_pieces;j++){
-	var a = this.puzzle_pieces[0][0].getPiece();
-	//dragElement(a);
+	for (var i = 0; i < vertical_pieces; i++) {
+		for(var j = 0; j < horizontal_pieces; j++){
+			var puzzle_piece = this.puzzle_pieces[i][j].getPiece();
 
-// 	// a.innerHTML = 'some text';
-collection.appendChild(a);
+			var collection = document.getElementById('puzzle');
+			var img_div =  document.createElement('div');
+			const id = "piece row:"+i+" col:"+j
+			img_div.class = "board"
+			img_div.id = id
+			img_div.appendChild(puzzle_piece);
+			img_div.setAttribute("style", 		
+				`position: absolute;
+				z-index: 9;
+				background-color: #transparent;
+				text-align: center;
+				border: 1px solid #transparent;
+				width:140px;
+				height:140px;
+				cursor: move;`);
 
-var collection2 = document.getElementById('piece2');
-var b = this.puzzle_pieces[1][1].getPiece();
-collection2.appendChild(b);
+			//img_div.innerHTML = puzzle_piece
+			collection.appendChild(img_div);
+			dragElement(document.getElementById(id));
 
+		}
+	}
 
+// 	var collection = document.getElementById('piece');
+// // var a = document.createElement('div');
+// // for (var i = 0; i<vertical_pieces;i++){
+// // 	for (var j = 0; j<horizontal_pieces;j++){
+// 	var a = this.puzzle_pieces[0][0].getPiece();
+// 	//dragElement(a);
+
+// // 	// a.innerHTML = 'some text';
+// collection.appendChild(a);
+
+// var collection2 = document.getElementById('piece2');
+// var b = this.puzzle_pieces[1][1].getPiece();
+// collection2.appendChild(b);
+
+// dragElement(document.getElementById("board"));
+// dragElement(document.getElementById("board2"));
+// console.log(document.getElementById('puzzle'))
 
 // }
 // }
@@ -85,7 +114,7 @@ buildPuzzle(){
 				right = this.randomVertical();
 			}
 
-			let puzzle_piece = new PuzzlePiece(top,bottom,left,right);
+			let puzzle_piece = new PuzzlePiece(top,bottom,left,right,i,j);
 			row.push(puzzle_piece)
 		}
 		puzzle_pieces.push(row);
@@ -98,11 +127,13 @@ buildPuzzle(){
 }
 
 class PuzzlePiece {
-	constructor(top_shape,bottom_shape,left_shape,right_shape){
+	constructor(top_shape,bottom_shape,left_shape,right_shape,i,j){
 		this.top = top_shape;
 		this.bottom = bottom_shape;
 		this.right = right_shape;
 		this.left = left_shape;
+		this.row = i;
+		this.col = j
 	}
 
 	getPiece(){
@@ -124,6 +155,13 @@ class PuzzlePiece {
 
 		let svg = `<?xml version="1.0" encoding="UTF-8"?>
 		<svg xmlns="http://www.w3.org/2000/svg" width="170px" height="170px" >
+		<defs>
+		<pattern id="img1" patternUnits="userSpaceOnUse" width="600" height="600">
+		<image xlink:href="https://ippcdn-ippawards.netdna-ssl.com/wp-content/uploads/2018/07/49-1st-SUNSET-Sara-Ronkainen-1.jpg" x="-250" y="-50"
+		width="600" height="600" />
+		</pattern>
+		</defs>  
+		<rect y="30" id="svg_1" height="100" width="100" x="30" stroke-width="0" stroke="#000" fill="url(#img1)"/>
 
 		<g id="Puzzle">
 		<g id="RowGroup">
@@ -148,6 +186,7 @@ class PuzzlePiece {
 		</g>
 
 		</svg>`	
+
 		img_div.innerHTML = svg
 		  //img_div.innerHTML = "<img src = \"10x10 puzzl.svg\" alt=\"triangle with all three sides equal\" height=\"400px\"width=\"600px\"\\>"
 		  return img_div;
@@ -207,6 +246,23 @@ class PuzzlePiece {
 		else if(edge_type == EdgeType.RIGHT){
 			border = border.replace("M 30 30","M 130 30")
 		} 
+
+		//fix coloring for non flat pieces
+		if(border_type != BorderType.FLAT_VERTICAL && border_type != BorderType.FLAT_HORIZONTAL){
+			if(edge_type == EdgeType.TOP && border_type == BorderType.HORIZONTAL1){// && border_type == BorderType.){
+				border = border.replace("fill=\"white\"","fill=\"url(#img1)\"");
+			}
+			else if(edge_type == EdgeType.BOTTOM && border_type == BorderType.HORIZONTAL2){
+				border = border.replace("fill=\"white\"","fill=\"url(#img1)\"");
+			}
+			else if(edge_type == EdgeType.RIGHT && border_type == BorderType.VERTICAL1){
+				border = border.replace("fill=\"white\"","fill=\"url(#img1)\"");
+			}
+			else if(edge_type == EdgeType.LEFT && border_type == BorderType.VERTICAL2){
+				border = border.replace("fill=\"white\"","fill=\"url(#img1)\"");
+			}
+		}
+
 		return border;
 	}
 
@@ -216,7 +272,6 @@ class PuzzlePiece {
 	100 0                                                                                                                            
 	"
 	/>`;
-
 	const flat_vertical = `<path id="flat_vertical"  fill="none" stroke="red" stroke-width=".5px" d="
 	M 30 30                                                  
 	l
@@ -224,8 +279,7 @@ class PuzzlePiece {
 	"
 	/>`;
 
-
-	const horizontal1 = `<path id="horizontal1"  fill="none" stroke="red" stroke-width=".5px" d="
+	const horizontal1 = `<path id="horizontal1"  fill="white" stroke="red" stroke-width=".5px" d="
 	M 30 30
 	c 
 	8.938547,-1.815642 24.20857,-2.793296 30.81937,0 
@@ -238,7 +292,7 @@ class PuzzlePiece {
 	6.610801,-2.793296 21.97393,-1.815642 30.81937,0                                                                                                                            
 	"
 	/>`
-	const horizontal2 = `<path id="horizontal2"  fill="none" stroke="red" stroke-width=".5px" d="                                                                                                                        
+	const horizontal2 = `<path id="horizontal2"  fill="white" stroke="red" stroke-width=".5px" d="                                                                                                                        
 	M 30 30
 	c 
 	8.938547,1.815642 24.20857,2.793296 30.81937,0 
@@ -252,7 +306,7 @@ class PuzzlePiece {
 	"
 	/>`
 
-	const vertical1 = `<path id="vertical1"  fill="none" stroke="red" stroke-width=".5px" d="
+	const vertical1 = `<path id="vertical1"  fill="white" stroke="red" stroke-width=".5px" d="
 	M 30 30
 	c 
 	1.815642,8.938547 2.793296,24.20857 0,30.81937 
@@ -265,7 +319,7 @@ class PuzzlePiece {
 	2.793296,6.610801 1.815642,21.97393 0,30.81937 
 	"
 	/>`
-	const vertical2 = `<path id="vertical2"  fill="none" stroke="red" stroke-width=".5px" d="
+	const vertical2 = `<path id="vertical2"  fill="white" stroke="red" stroke-width=".5px" d="
 	M 30 30
 	c 
 	-1.815642,8.938547 -2.793296,24.20857 0,30.81937 

@@ -55,14 +55,6 @@
 		cursor: move;
 	}
 
-	#boardheader {
-		padding: 0px;
-		
-		z-index: 10;
-		background-color: #transparent;
-		color: #fff;
-	}
-
 		#board2 {
 
 		position: absolute;
@@ -73,12 +65,4 @@
 		width:140px;
 		height:140px;
 		cursor: move;
-	}
-
-	#boardheader2 {
-		padding: 0px;
-		
-		z-index: 10;
-		background-color: #transparent;
-		color: #fff;
 	}

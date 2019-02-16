@@ -12,19 +12,16 @@
 <body>
 	<button type="button" onclick="solvePuzzle()">Solve</button>
 
-
-	<div id="board">
-		<div id="boardheader"></div>
-		<div id="piece" tag ="piece">
-
+	<div id="puzzle">
+<!-- 		<div id="board">
+			<div id="piece" tag ="piece">
+			</div>
 		</div>
-	</div>
 
-	<div id="board2">
-		<div id="boardheader2"></div>
-		<div id="piece2" tag ="piece2">
-
-		</div>
+		<div id="board2">
+			<div id="piece2" tag ="piece2">
+			</div>
+		</div> -->
 	</div>
 <!-- 	<div id="board">
 		<div id="boardheader"></div>
@@ -33,12 +30,12 @@
 		</div>
 	</div> -->
 
-<script>
+	<script>
 //Make the DIV element draggagle:
 
 
-	dragElement(document.getElementById("board"));
-		dragElement(document.getElementById("board2"));
+	// dragElement(document.getElementById("board"));
+	// 	dragElement(document.getElementById("board2"));
 
 	//dragElement(document.getElementById("piece2"));
 
@@ -82,7 +79,7 @@
 		document.onmouseup = null;
 		document.onmousemove = null;
 	}
-	}
+}
 </script>
 
 <script>
