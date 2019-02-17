@@ -6,94 +6,68 @@
 	<script type="text/javascript" src="PuzzleBuilder.js"></script>
 	<link rel="stylesheet" href="style.css">
 	<style>
-
 </style>
 </head>
 <body>
 	<button type="button" onclick="solvePuzzle()">Solve</button>
-
-	<div id="puzzle">
-<!-- 		<div id="board">
-			<div id="piece" tag ="piece">
-			</div>
-		</div>
-
-		<div id="board2">
-			<div id="piece2" tag ="piece2">
-			</div>
-		</div> -->
-	</div>
-<!-- 	<div id="board">
-		<div id="boardheader"></div>
-		<div id="piece" tag ="piece">
-
-		</div>
-	</div> -->
-
+	<div id="puzzle"></div>
 	<script>
-//Make the DIV element draggagle:
+		function dragElement(elmnt,puzzle_piece) {
+			var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+			if (document.getElementById(elmnt.id)) {
+				/* if present, the header is where you move the DIV from:*/
+				document.getElementById(elmnt.id).onmousedown = dragMouseDown;
+			} else {
+				/* otherwise, move the DIV from anywhere inside the DIV:*/
+				elmnt.onmousedown = dragMouseDown;
+			}
 
+			function dragMouseDown(e) {
+				e = e || window.event;
+				e.preventDefault();
+         	    // get the mouse cursor position at startup:
+         	    pos3 = e.clientX;
+         	    pos4 = e.clientY;
+         	    document.onmouseup = closeDragElement;
+         	    // call a function whenever the cursor moves:
+         	    document.onmousemove = elementDrag;
 
-	// dragElement(document.getElementById("board"));
-	// 	dragElement(document.getElementById("board2"));
+         	}
 
-	//dragElement(document.getElementById("piece2"));
+         	function elementDrag(e) {
+         		e = e || window.event;
+         		e.preventDefault();
+         	    // calculate the new cursor position:
+         	    pos1 = pos3 - e.clientX;
+         	    pos2 = pos4 - e.clientY;
+         	    pos3 = e.clientX;
+         	    pos4 = e.clientY;
+         	    // set the element's new position:
+         	    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+         	    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+         	}
 
+         	function closeDragElement() {
+         		let final_x = elmnt.offsetLeft - pos1
+         		let final_y = elmnt.offsetTop - pos2
 
-	function dragElement(elmnt) {
-		var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-		if (document.getElementById(elmnt.id)) {
-			/* if present, the header is where you move the DIV from:*/
-			document.getElementById(elmnt.id).onmousedown = dragMouseDown;
-		} else {
-			/* otherwise, move the DIV from anywhere inside the DIV:*/
-			elmnt.onmousedown = dragMouseDown;
-		}
+         		document.puzzle.checkCorrectPieces(puzzle_piece,final_x,final_y);
+         		/* stop moving when mouse button is released:*/
+         		document.onmouseup = null;
+         		document.onmousemove = null;
+         	}
+         }
+     </script>
+     <script>
+     	document.puzzle = new Puzzle(300,300,3,3);
+     	function solvePuzzle(){
+     		document.getElementById('topLeft').remove()
 
-		function dragMouseDown(e) {
-			e = e || window.event;
-			e.preventDefault();
-	    // get the mouse cursor position at startup:
-	    pos3 = e.clientX;
-	    pos4 = e.clientY;
-	    document.onmouseup = closeDragElement;
-	    // call a function whenever the cursor moves:
-	    document.onmousemove = elementDrag;
-	}
-
-	function elementDrag(e) {
-		e = e || window.event;
-		e.preventDefault();
-	    // calculate the new cursor position:
-	    pos1 = pos3 - e.clientX;
-	    pos2 = pos4 - e.clientY;
-	    pos3 = e.clientX;
-	    pos4 = e.clientY;
-	    // set the element's new position:
-	    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-	    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-	}
-
-	function closeDragElement() {
-		/* stop moving when mouse button is released:*/
-		document.onmouseup = null;
-		document.onmousemove = null;
-	}
-}
-</script>
-
-<script>
-	document.puzzle = new Puzzle(600,600,3,3);
-	function solvePuzzle(){
-		document.getElementById('topLeft').remove()
-
-		var newDiv = document.createElement("div");
-		let piece = document.puzzle.puzzle_pieces[0][0].getPiece()
-		newDiv.appendChild(piece);
-		document.body.appendChild(newDiv);
-	}
-</script>
-
-
-</body>
-</html>
+     		var newDiv = document.createElement("div");
+     		let piece = document.puzzle.puzzle_pieces[0][0].getPiece()
+     		newDiv.appendChild(piece);
+     		document.body.appendChild(newDiv);
+     	}
+     </script>
+ </body>
+ </html>
