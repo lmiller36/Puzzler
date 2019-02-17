@@ -43,27 +43,32 @@
          	    pos3 = e.clientX;
          	    pos4 = e.clientY;
 
-         	    //if a piece is in a puzzle group, drag all pieces as well
-         	    // if(puzzle_piece.puzzle_group){
-         	    // 	let puzzle_group = puzzle_piece.puzzle_group;
-         	    // 	document.puzzle.movePieces(puzzle_piece,puzzle_group);
-         	    // } 
-         	    // else{
-         	    	elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-         	    	elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-         	  //  }
+
+         	    let final_x = elmnt.offsetLeft - pos1
+         	    let final_y = elmnt.offsetTop - pos2
+
+         	    puzzle_piece.final_x = final_x;
+         	    puzzle_piece.final_y = final_y;
+
+         	 //   if a piece is in a puzzle group, drag all pieces as well
+         	 if(puzzle_piece.puzzle_group){
+         	 	let puzzle_group = puzzle_piece.puzzle_group;
+         	 	document.puzzle.movePieces(puzzle_piece,puzzle_group);
+         	 } 
+         	 else{
+         	 	elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+         	 	elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+         	 }
 
          	    // set the element's new position:
 
          	}
 
          	function closeDragElement() {
-         		let final_x = elmnt.offsetLeft - pos1
-         		let final_y = elmnt.offsetTop - pos2
 
 
 
-         		document.puzzle.checkCorrectPieces(puzzle_piece,final_x,final_y);
+         		document.puzzle.checkCorrectPieces(puzzle_piece);
 
          		if(puzzle_piece.puzzle_group){
          			let puzzle_group = puzzle_piece.puzzle_group;

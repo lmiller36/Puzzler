@@ -104,10 +104,8 @@ class Puzzle {
 		return puzzle_pieces;
 	}
 
-	checkCorrectPieces(puzzle_piece_moved,final_x,final_y){
+	checkCorrectPieces(puzzle_piece_moved){
 		//set new location
-		puzzle_piece_moved.final_x = final_x;
-		puzzle_piece_moved.final_y = final_y;
 
 		let row = puzzle_piece_moved.row;
 		let col = puzzle_piece_moved.col;
@@ -119,9 +117,7 @@ class Puzzle {
 			let top_piece = this.puzzle_pieces[row - 1][col];
 			let orientation = EdgeType.TOP
 			let shouldBeConnected = this.piecesShouldBeConnected(puzzle_piece_moved,top_piece,orientation);
-
-			console.log(shouldBeConnected);
-
+			if(shouldBeConnected)console.log("TOPS match")
 			if(shouldBeConnected){
 				pieces_to_combine.push(top_piece);
 			}
@@ -131,8 +127,7 @@ class Puzzle {
 			let bottom_piece = this.puzzle_pieces[row + 1][col];
 			let orientation = EdgeType.BOTTOM
 			let shouldBeConnected = this.piecesShouldBeConnected(puzzle_piece_moved,bottom_piece,orientation);
-
-			console.log(shouldBeConnected);
+			if(shouldBeConnected)console.log("BOTTOMs match")
 
 			if(shouldBeConnected){
 				pieces_to_combine.push(bottom_piece);
@@ -144,8 +139,8 @@ class Puzzle {
 			let left_piece = this.puzzle_pieces[row][col-1];
 			let orientation = EdgeType.LEFT
 			let shouldBeConnected = this.piecesShouldBeConnected(puzzle_piece_moved,left_piece,orientation);
+			if(shouldBeConnected)console.log("Left match")
 
-			console.log(shouldBeConnected);
 
 			if(shouldBeConnected){
 				pieces_to_combine.push(left_piece);
@@ -158,8 +153,8 @@ class Puzzle {
 			let right_piece = this.puzzle_pieces[row][col+1];
 			let orientation = EdgeType.RIGHT
 			let shouldBeConnected = this.piecesShouldBeConnected(puzzle_piece_moved,right_piece,orientation);
+			if(shouldBeConnected)console.log("Right match")
 
-			console.log(shouldBeConnected);
 
 			if(shouldBeConnected){
 				pieces_to_combine.push(right_piece);
@@ -193,23 +188,30 @@ class Puzzle {
 
 	}
 
+
 	combinePieces(pieces_to_combine){
 
 		//all pieces, including pieces in groups
 		var all_pieces_to_combine = [];
-
+		var seen_ids = [];
 		for (var i = 0; i < pieces_to_combine.length;i++){
 			let piece = pieces_to_combine[i]
-			if(piece.puzzle_group){
+			if(piece.puzzle_group && seen_ids.indexOf(piece.puzzle_group.group_id) == -1){
 				let puzzle_group = piece.puzzle_group;
+				console.log(seen_ids.indexOf(puzzle_group.group_id))
+
 				all_pieces_to_combine = all_pieces_to_combine.concat(puzzle_group.pieces);
+				console.log(puzzle_group.group_id)
+				seen_ids.push(piece.puzzle_group.group_id);
 			}
 			else{
 				all_pieces_to_combine.push(piece);
 			}
 		}
 
-		var puzzle_group = new PuzzleGroup(all_pieces_to_combine);
+		//all_pieces_to_combine = this.removeDups(all_pieces_to_combine);
+
+		var puzzle_group = new PuzzleGroup(all_pieces_to_combine,all_pieces_to_combine[0].getID());
 		for (var i = 0; i < all_pieces_to_combine.length;i++){
 			let piece = all_pieces_to_combine[i];
 			piece.puzzle_group = puzzle_group;
@@ -236,12 +238,8 @@ class Puzzle {
 		let x_diff = puzzle_piece1.final_x - puzzle_piece2.final_x;
 		let y_diff = puzzle_piece1.final_y - puzzle_piece2.final_y;
 
-		console.log(x_diff);
-		console.log(y_diff);
-
 		let width = 100;
 		let height = 100;
-
 
 		let pieceOnRight = Math.abs(x_diff + width) <= tolerance; 
 		let pieceOnLeft = Math.abs(x_diff - width) <= tolerance; 
@@ -252,9 +250,6 @@ class Puzzle {
 		let heightsAlmostEqual = Math.abs(y_diff) <= tolerance; 
 		let widthsAlmostEqual = Math.abs(x_diff) <= tolerance; 
 
-
-		console.log(pieceOnTop);
-		console.log(widthsAlmostEqual)
 
 		if(orientation == EdgeType.BOTTOM && pieceOnBottom && widthsAlmostEqual){
 			return true
@@ -495,7 +490,8 @@ function getBorders(border_type, edge_type,img_name){
 	/>`
 
 	class PuzzleGroup{
-		constructor(puzzle_pieces) {
-			this.pieces = puzzle_pieces
+		constructor(puzzle_pieces,group_id) {
+			this.pieces = puzzle_pieces;
+			this.group_id = group_id;
 		}
 	}
