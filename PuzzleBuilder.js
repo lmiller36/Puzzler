@@ -115,10 +115,42 @@ class Puzzle {
 		var pieces_to_combine = []
 
 		//check top
+		if(puzzle_piece_moved.top != BorderType.FLAT_HORIZONTAL){
+			let top_piece = this.puzzle_pieces[row - 1][col];
+			let orientation = EdgeType.TOP
+			let shouldBeConnected = this.piecesShouldBeConnected(puzzle_piece_moved,top_piece,orientation);
 
+			console.log(shouldBeConnected);
+
+			if(shouldBeConnected){
+				pieces_to_combine.push(top_piece);
+			}
+		}
 		//check bottom
+		if(puzzle_piece_moved.bottom != BorderType.FLAT_HORIZONTAL){
+			let bottom_piece = this.puzzle_pieces[row + 1][col];
+			let orientation = EdgeType.BOTTOM
+			let shouldBeConnected = this.piecesShouldBeConnected(puzzle_piece_moved,bottom_piece,orientation);
+
+			console.log(shouldBeConnected);
+
+			if(shouldBeConnected){
+				pieces_to_combine.push(bottom_piece);
+			}
+		}
 
 		//check left
+		if(puzzle_piece_moved.left != BorderType.FLAT_VERTICAL){
+			let left_piece = this.puzzle_pieces[row][col-1];
+			let orientation = EdgeType.LEFT
+			let shouldBeConnected = this.piecesShouldBeConnected(puzzle_piece_moved,left_piece,orientation);
+
+			console.log(shouldBeConnected);
+
+			if(shouldBeConnected){
+				pieces_to_combine.push(left_piece);
+			}
+		}
 
 		//check right
 
@@ -128,45 +160,62 @@ class Puzzle {
 			let shouldBeConnected = this.piecesShouldBeConnected(puzzle_piece_moved,right_piece,orientation);
 
 			console.log(shouldBeConnected);
-			const id1 = "piece row:"+row+" col:"+col
-			const id2 = "piece row:"+right_piece.row+" col:"+right_piece.col
 
-			var piece1 = document.getElementById(id1);
-			var piece2 = document.getElementById(id2);
-
-			pieces_to_combine.push(right_piece);
-			// console.log(piece1);
-			// console.log(piece2);
-
-			// console.log(piece1.style.top);
-			// console.log(piece1.style.left)
-
-			// console.log(piece2.style.top);
-			// console.log(piece2.style.left)
-			// let piece1_x = parseInt(piece1.style.left.replace("px",""))
-			// console.log(piece1_x)
-			// console.log(piece1_x+100)
-
-			// piece2.style.top = final_y + "px"
-			// piece2.style.left = (final_x + 100) + "px"
-
-			// piece1.style.left
+			if(shouldBeConnected){
+				pieces_to_combine.push(right_piece);
+			}
 		}
 
 		//some piece(s) were correct
 		if(pieces_to_combine.length > 0){
 			pieces_to_combine.push(puzzle_piece_moved);
-			this.combinePieces(pieces_to_combine)
+			let puzzle_group = this.combinePieces(pieces_to_combine)
+			console.log(puzzle_group);
+			this.movePieces(puzzle_piece_moved,puzzle_group);
+		}
+
+	}
+
+	movePieces(mainPiece,puzzle_group){
+		for (var i = 0; i < puzzle_group.pieces.length; i++){
+			let piece = puzzle_group.pieces[i];
+
+			// if(piece.row == mainPiece.row && piece.col == mainPiece.col){
+			// 	console.log("same d")
+			// }
+			let rowDiff = piece.row - mainPiece.row;
+			let colDiff = piece.col - mainPiece.col;
+
+			let pieceDiv = document.getElementById(piece.getID());
+			pieceDiv.style.top = (mainPiece.final_y + 100 * rowDiff)+"px"
+			pieceDiv.style.left = (mainPiece.final_x + 100 * colDiff) + "px"
 		}
 
 	}
 
 	combinePieces(pieces_to_combine){
 
+		//all pieces, including pieces in groups
+		var all_pieces_to_combine = [];
+
 		for (var i = 0; i < pieces_to_combine.length;i++){
 			let piece = pieces_to_combine[i]
-			console.log(piece);
+			if(piece.puzzle_group){
+				let puzzle_group = piece.puzzle_group;
+				all_pieces_to_combine = all_pieces_to_combine.concat(puzzle_group.pieces);
+			}
+			else{
+				all_pieces_to_combine.push(piece);
+			}
 		}
+
+		var puzzle_group = new PuzzleGroup(all_pieces_to_combine);
+		for (var i = 0; i < all_pieces_to_combine.length;i++){
+			let piece = all_pieces_to_combine[i];
+			piece.puzzle_group = puzzle_group;
+		}
+
+		return puzzle_group;
 	}
 
 	//true if pieces are lined up correct with given orientation
@@ -175,14 +224,14 @@ class Puzzle {
 		//check pieces exist
 		if(!(puzzle_piece1 && puzzle_piece2)) return false;
 
+
 		//check both pieces have moved
 		if(!puzzle_piece1.pieceHasMoved()) return false;
 		if(!puzzle_piece2.pieceHasMoved()) return false;
 
 
-
 		//pixel tolerance of 2 for closeness of pieces
-		let tolerance = 2;
+		let tolerance = 4;
 
 		let x_diff = puzzle_piece1.final_x - puzzle_piece2.final_x;
 		let y_diff = puzzle_piece1.final_y - puzzle_piece2.final_y;
@@ -191,13 +240,35 @@ class Puzzle {
 		console.log(y_diff);
 
 		let width = 100;
-
-		let greaterThanNegativeWidth = Math.abs(x_diff + width) <= tolerance; 
-		let greaterThanNegativeTolerance = Math.abs(y_diff) <= tolerance; 
+		let height = 100;
 
 
-		//#TODO check if orientation is right
-		if(orientation == EdgeType.RIGHT && greaterThanNegativeWidth && greaterThanNegativeTolerance){
+		let pieceOnRight = Math.abs(x_diff + width) <= tolerance; 
+		let pieceOnLeft = Math.abs(x_diff - width) <= tolerance; 
+
+		let pieceOnBottom = Math.abs(y_diff + height) <= tolerance; 
+		let pieceOnTop = Math.abs(y_diff - height) <= tolerance; 
+
+		let heightsAlmostEqual = Math.abs(y_diff) <= tolerance; 
+		let widthsAlmostEqual = Math.abs(x_diff) <= tolerance; 
+
+
+		console.log(pieceOnTop);
+		console.log(widthsAlmostEqual)
+
+		if(orientation == EdgeType.BOTTOM && pieceOnBottom && widthsAlmostEqual){
+			return true
+		}
+
+		if(orientation == EdgeType.TOP && pieceOnTop && widthsAlmostEqual){
+			return true
+		}
+		
+		if(orientation == EdgeType.RIGHT && pieceOnRight && heightsAlmostEqual){
+			return true
+		}
+
+		if(orientation == EdgeType.LEFT && pieceOnLeft && heightsAlmostEqual){
 			return true
 		}
 
@@ -221,6 +292,10 @@ class PuzzlePiece {
 
 	pieceHasMoved(){
 		return this.final_x != null && this.final_y != null;
+	}
+
+	getID(){
+		return "piece row:"+this.row+" col:"+this.col;
 	}
 
 	getImageName(){
@@ -350,77 +425,77 @@ function getBorders(border_type, edge_type,img_name){
 		}
 
 		return border;
-}
+	}
 
-const flat_horizontal = `<path id="flat_horizontal"  fill="none" stroke="black" stroke-width=".5px" d="
-		M 30 30                                                  
-		l
-		100 0                                                                                                                            
-		"
-		/>`;
-const flat_vertical = `<path id="flat_vertical"  fill="none" stroke="black" stroke-width=".5px" d="
-		M 30 30                                                  
-		l
-		0 100                                                                                                                            
-		"
-		/>`;
+	const flat_horizontal = `<path id="flat_horizontal"  fill="none" stroke="black" stroke-width=".5px" d="
+	M 30 30                                                  
+	l
+	100 0                                                                                                                            
+	"
+	/>`;
+	const flat_vertical = `<path id="flat_vertical"  fill="none" stroke="black" stroke-width=".5px" d="
+	M 30 30                                                  
+	l
+	0 100                                                                                                                            
+	"
+	/>`;
 
-const horizontal1 = `<path id="horizontal1"  fill="white" stroke="black" stroke-width=".5px" d="
-		M 30 30
-		c 
-		8.938547,-1.815642 24.20857,-2.793296 30.81937,0 
-		4.003725,1.606145 8.566108,-0.2793296 6.610801,-2.513967 
-		-3.258845,-3.631285 -6.424581,-5.307262 -6.424581,-11.52235 
-		0,-6.284916 8.100558,-9.916202 18.99441,-9.916202 
-		10.98696,0 18.99441,3.631285 18.99441,9.916202 
-		0,6.215084 -3.165735,7.891061 -6.424581,11.52235 
-		-1.955307,2.234637 2.607076,4.120112 6.610801,2.513967 
-		6.610801,-2.793296 21.97393,-1.815642 30.81937,0                                                                                                                            
-		"
-		/>`
-const horizontal2 = `<path id="horizontal2"  fill="white" stroke="black" stroke-width=".5px" d="                                                                                                                        
-		M 30 30
-		c 
-		8.938547,1.815642 24.20857,2.793296 30.81937,0 
-		4.003725,-1.606145 8.566108,0.2793296 6.610801,2.513967 
-		-3.258845,3.631285 -6.424581,5.307262 -6.424581,11.52235 
-		0,6.284916 8.100558,9.916202 18.99441,9.916202 
-		10.98696,0 18.99441,-3.631285 18.99441,-9.916202 
-		0,-6.215084 -3.165735,-7.891061 -6.424581,-11.52235 
-		-1.955307,-2.234637 2.607076,-4.120112 6.610801,-2.513967 
-		6.610801,2.793296 21.97393,1.815642 30.81937,0 
-		"
-		/>`
+	const horizontal1 = `<path id="horizontal1"  fill="white" stroke="black" stroke-width=".5px" d="
+	M 30 30
+	c 
+	8.938547,-1.815642 24.20857,-2.793296 30.81937,0 
+	4.003725,1.606145 8.566108,-0.2793296 6.610801,-2.513967 
+	-3.258845,-3.631285 -6.424581,-5.307262 -6.424581,-11.52235 
+	0,-6.284916 8.100558,-9.916202 18.99441,-9.916202 
+	10.98696,0 18.99441,3.631285 18.99441,9.916202 
+	0,6.215084 -3.165735,7.891061 -6.424581,11.52235 
+	-1.955307,2.234637 2.607076,4.120112 6.610801,2.513967 
+	6.610801,-2.793296 21.97393,-1.815642 30.81937,0                                                                                                                            
+	"
+	/>`
+	const horizontal2 = `<path id="horizontal2"  fill="white" stroke="black" stroke-width=".5px" d="                                                                                                                        
+	M 30 30
+	c 
+	8.938547,1.815642 24.20857,2.793296 30.81937,0 
+	4.003725,-1.606145 8.566108,0.2793296 6.610801,2.513967 
+	-3.258845,3.631285 -6.424581,5.307262 -6.424581,11.52235 
+	0,6.284916 8.100558,9.916202 18.99441,9.916202 
+	10.98696,0 18.99441,-3.631285 18.99441,-9.916202 
+	0,-6.215084 -3.165735,-7.891061 -6.424581,-11.52235 
+	-1.955307,-2.234637 2.607076,-4.120112 6.610801,-2.513967 
+	6.610801,2.793296 21.97393,1.815642 30.81937,0 
+	"
+	/>`
 
-const vertical1 = `<path id="vertical1"  fill="white" stroke="black" stroke-width=".5px" d="
-		M 30 30
-		c 
-		1.815642,8.938547 2.793296,24.20857 0,30.81937 
-		-1.606145,4.003725 0.2793296,8.566108 2.513967,6.610801 
-		3.631285,-3.258845 5.307262,-6.424581 11.52235,-6.424581 
-		6.284916,0 9.916202,8.100558 9.916202,18.99441 
-		0,10.98696 -3.631285,18.99441 -9.916202,18.99441 
-		-6.215084,0 -7.891061,-3.165735 -11.52235,-6.424581 
-		-2.234637,-1.955307 -4.120112,2.607076 -2.513967,6.610801 
-		2.793296,6.610801 1.815642,21.97393 0,30.81937 
-		"
-		/>`
-const vertical2 = `<path id="vertical2"  fill="white" stroke="black" stroke-width=".5px" d="
-		M 30 30
-		c 
-		-1.815642,8.938547 -2.793296,24.20857 0,30.81937 
-		1.606145,4.003725 -0.2793296,8.566108 -2.513967,6.610801 
-		-3.631285,-3.258845 -5.307262,-6.424581 -11.52235,-6.424581 
-		-6.284916,0 -9.916202,8.100558 -9.916202,18.99441 
-		0,10.98696 3.631285,18.99441 9.916202,18.99441 
-		6.215084,0 7.891061,-3.165735 11.52235,-6.424581 
-		2.234637,-1.955307 4.120112,2.607076 2.513967,6.610801 
-		-2.793296,6.610801 -1.815642,21.97393 0,30.81937 
-		"
-		/>`
+	const vertical1 = `<path id="vertical1"  fill="white" stroke="black" stroke-width=".5px" d="
+	M 30 30
+	c 
+	1.815642,8.938547 2.793296,24.20857 0,30.81937 
+	-1.606145,4.003725 0.2793296,8.566108 2.513967,6.610801 
+	3.631285,-3.258845 5.307262,-6.424581 11.52235,-6.424581 
+	6.284916,0 9.916202,8.100558 9.916202,18.99441 
+	0,10.98696 -3.631285,18.99441 -9.916202,18.99441 
+	-6.215084,0 -7.891061,-3.165735 -11.52235,-6.424581 
+	-2.234637,-1.955307 -4.120112,2.607076 -2.513967,6.610801 
+	2.793296,6.610801 1.815642,21.97393 0,30.81937 
+	"
+	/>`
+	const vertical2 = `<path id="vertical2"  fill="white" stroke="black" stroke-width=".5px" d="
+	M 30 30
+	c 
+	-1.815642,8.938547 -2.793296,24.20857 0,30.81937 
+	1.606145,4.003725 -0.2793296,8.566108 -2.513967,6.610801 
+	-3.631285,-3.258845 -5.307262,-6.424581 -11.52235,-6.424581 
+	-6.284916,0 -9.916202,8.100558 -9.916202,18.99441 
+	0,10.98696 3.631285,18.99441 9.916202,18.99441 
+	6.215084,0 7.891061,-3.165735 11.52235,-6.424581 
+	2.234637,-1.955307 4.120112,2.607076 2.513967,6.610801 
+	-2.793296,6.610801 -1.815642,21.97393 0,30.81937 
+	"
+	/>`
 
-class PuzzleGroup{
+	class PuzzleGroup{
 		constructor(puzzle_pieces) {
 			this.pieces = puzzle_pieces
 		}
-}
+	}
