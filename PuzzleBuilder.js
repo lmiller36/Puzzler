@@ -21,15 +21,25 @@ class Puzzle {
     	this.horizontal_pieces = horizontal_pieces;
     	this.puzzle_pieces = this.buildPuzzle();
 
-    	for (var i = 0; i < vertical_pieces; i++) {
-    		for (var j = 0; j < horizontal_pieces; j++) {
+    	this.addPuzzlePiecesToPuzzle();
+    }
+
+    addPuzzlePiecesToPuzzle(){
+    	let widthOfScreen = window.innerWidth;
+    	let heightOfScreen = window.innerHeight;
+
+    	let width = 100;
+    	let height = 100;
+
+    	for (var i = 0; i < this.vertical_pieces; i++) {
+    		for (var j = 0; j < this.horizontal_pieces; j++) {
 
     			let puzzle_piece = this.puzzle_pieces[i][j]
     			var puzzle_piece_svg = puzzle_piece.getPiece();
 
     			var collection = document.getElementById('puzzle');
     			var img_div = document.createElement('div');
-    			const id = "piece row:" + i + " col:" + j
+    			const id = puzzle_piece.getID();
     			img_div.class = "board"
     			img_div.id = id
     			img_div.appendChild(puzzle_piece_svg);
@@ -47,8 +57,16 @@ class Puzzle {
                 collection.appendChild(img_div);
                 dragElement(document.getElementById(id), puzzle_piece);
 
+                /**randomize location**/
+
+                let randomX = Math.floor(Math.random() * (widthOfScreen - width));
+                let randomY =  Math.floor(Math.random() * (heightOfScreen - height));
+                img_div.style.top = (randomX) + "px"
+                img_div.style.left = (randomY) + "px"
+
             }
         }
+
     }
 
     randomHorizontal() {
@@ -184,16 +202,13 @@ class Puzzle {
     	for (var i = 0; i < puzzle_group.pieces.length; i++) {
     		let piece = puzzle_group.pieces[i];
 
-            // if(piece.row == mainPiece.row && piece.col == mainPiece.col){
-            // 	console.log("same d")
-            // }
-            let rowDiff = piece.row - mainPiece.row;
-            let colDiff = piece.col - mainPiece.col;
+    		let rowDiff = piece.row - mainPiece.row;
+    		let colDiff = piece.col - mainPiece.col;
 
-            let pieceDiv = document.getElementById(piece.getID());
-            pieceDiv.style.top = (mainPiece.final_y + 100 * rowDiff) + "px"
-            pieceDiv.style.left = (mainPiece.final_x + 100 * colDiff) + "px"
-        }
+    		let pieceDiv = document.getElementById(piece.getID());
+    		pieceDiv.style.top = (mainPiece.final_y + 100 * rowDiff) + "px"
+    		pieceDiv.style.left = (mainPiece.final_x + 100 * colDiff) + "px"
+    	}
 
     }
 
@@ -233,14 +248,6 @@ class Puzzle {
         console.log(seen_piece_ids)
         console.log(original_puzzle_group)
 
-        // var removeEdgeIfIDFound = (id,piece1,edge1,edge2) => {
-        // 	if(seen_piece_ids[id]){
-        // 		piece1.removeEdge(edge1)
-        // 		seen_piece_ids[id].removeEdge(edge2);
-        // 	}
-        // }
-
-
         //remove edges of original puzzle group (if available)
         if (original_puzzle_group) {
         	for (var i = original_puzzle_group.pieces.length - 1; i >= 0; i--) {
@@ -266,39 +273,23 @@ class Puzzle {
         //remove eges of original piece
         else {
         	let piece = original_piece;
-            // console.log(piece)
-            // console.log(getRowColID(piece.row-1,piece.col))
-            // console.log(getRowColID(piece.row+1,piece.col))
-            // console.log(getRowColID(piece.row,piece.col-1))
-            // console.log(getRowColID(piece.row,piece.col+1))
-            // console.log(seen_piece_ids[getRowColID(piece.row-1,piece.col)])
-            // console.log(seen_piece_ids[getRowColID(piece.row+1,piece.col)])
-            // console.log(seen_piece_ids[getRowColID(piece.row,piece.col-1)])
-            // console.log(seen_piece_ids[getRowColID(piece.row,piece.col+1)])
 
-
-
-            // removeEdgeIfIDFound(getRowColID(piece.row-1,piece.col),piece,EdgeType.TOP,EdgeType.BOTTOM);
-            // removeEdgeIfIDFound(getRowColID(piece.row+1,piece.col),piece,EdgeType.BOTTOM,EdgeType.TOP);
-            // removeEdgeIfIDFound(getRowColID(piece.row,piece.col+1),piece,EdgeType.LEFT,EdgeType.RIGHT);
-            //removeEdgeIfIDFound(getRowColID(piece.row,piece.col-1),piece,EdgeType.LEFT,EdgeType.RIGHT);
-
-            if (seen_piece_ids[getRowColID(piece.row - 1, piece.col)]) {
-            	piece.removeEdge(EdgeType.TOP);
-            	this.puzzle_pieces[piece.row - 1][piece.col].removeEdge(EdgeType.BOTTOM);
-            }
-            if (seen_piece_ids[getRowColID(piece.row + 1, piece.col)]) {
-            	piece.removeEdge(EdgeType.BOTTOM);
-            	this.puzzle_pieces[piece.row + 1][piece.col].removeEdge(EdgeType.TOP);
-            }
-            if (seen_piece_ids[getRowColID(piece.row, piece.col - 1)]) {
-            	piece.removeEdge(EdgeType.LEFT);
-            	this.puzzle_pieces[piece.row][piece.col - 1].removeEdge(EdgeType.RIGHT);
-            }
-            if (seen_piece_ids[getRowColID(piece.row, piece.col + 1)]) {
-            	piece.removeEdge(EdgeType.RIGHT);
-            	this.puzzle_pieces[piece.row][piece.col + 1].removeEdge(EdgeType.LEFT);
-            }
+        	if (seen_piece_ids[getRowColID(piece.row - 1, piece.col)]) {
+        		piece.removeEdge(EdgeType.TOP);
+        		this.puzzle_pieces[piece.row - 1][piece.col].removeEdge(EdgeType.BOTTOM);
+        	}
+        	if (seen_piece_ids[getRowColID(piece.row + 1, piece.col)]) {
+        		piece.removeEdge(EdgeType.BOTTOM);
+        		this.puzzle_pieces[piece.row + 1][piece.col].removeEdge(EdgeType.TOP);
+        	}
+        	if (seen_piece_ids[getRowColID(piece.row, piece.col - 1)]) {
+        		piece.removeEdge(EdgeType.LEFT);
+        		this.puzzle_pieces[piece.row][piece.col - 1].removeEdge(EdgeType.RIGHT);
+        	}
+        	if (seen_piece_ids[getRowColID(piece.row, piece.col + 1)]) {
+        		piece.removeEdge(EdgeType.RIGHT);
+        		this.puzzle_pieces[piece.row][piece.col + 1].removeEdge(EdgeType.LEFT);
+        	}
         }
 
         return puzzle_group;
@@ -397,7 +388,7 @@ class PuzzlePiece {
     // }
 
     removeEdge(edge_type) {
-    	 console.log("remove: "+this.getID() + " : " + edge_type)
+    	console.log("remove: "+this.getID() + " : " + edge_type)
         //var edge = document.getElementById(this.getBorderID(this.getBorderTypeForEdge(edge_type)));
         //console.log(edge)
         let edgeID = this.getBorderID(edge_type);

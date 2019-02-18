@@ -83,12 +83,14 @@
      <script>
      	document.puzzle = new Puzzle(300,300,3,3);
      	function solvePuzzle(){
-     		document.getElementById('topLeft').remove()
+     		console.log(window.innerHeight);
+     		console.log(window.innerWidth);
+     		// document.getElementById('topLeft').remove()
 
-     		var newDiv = document.createElement("div");
-     		let piece = document.puzzle.puzzle_pieces[0][0].getPiece()
-     		newDiv.appendChild(piece);
-     		document.body.appendChild(newDiv);
+     		// var newDiv = document.createElement("div");
+     		// let piece = document.puzzle.puzzle_pieces[0][0].getPiece()
+     		// newDiv.appendChild(piece);
+     		// document.body.appendChild(newDiv);
      	}
      </script>
  </body>
