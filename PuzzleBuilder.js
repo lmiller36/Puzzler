@@ -24,7 +24,7 @@ class Puzzle {
     	this.addPuzzlePiecesToPuzzle();
     }
 
-    addPuzzlePiecesToPuzzle(){
+    addPuzzlePiecesToPuzzle() {
     	let widthOfScreen = window.innerWidth;
     	let heightOfScreen = window.innerHeight;
 
@@ -60,9 +60,9 @@ class Puzzle {
                 /**randomize location**/
 
                 let randomX = Math.floor(Math.random() * (widthOfScreen - width));
-                let randomY =  Math.floor(Math.random() * (heightOfScreen - height));
-                img_div.style.top = (randomX) + "px"
-                img_div.style.left = (randomY) + "px"
+                let randomY = Math.floor(Math.random() * (heightOfScreen - height));
+
+                puzzle_piece.move(randomX,randomY);
 
             }
         }
@@ -85,8 +85,6 @@ class Puzzle {
     	const edges_in_row = this.vertical_pieces;
     	const piece_height = (this.height + 0.0) / this.vertical_pieces;
     	const piece_width = (this.width + 0.0) / this.horizontal_pieces;
-
-    	console.log(piece_height + ":" + piece_width);
 
     	var puzzle_pieces = [];
     	for (var i = 0; i < edges_in_row; i++) {
@@ -124,14 +122,25 @@ class Puzzle {
             }
             puzzle_pieces.push(row);
         }
-
-
         return puzzle_pieces;
     }
 
-    checkCorrectPieces(puzzle_piece_moved) {
-        //set new location
+    checkCorrectPieces(puzzle_piece_moved){
+    	//piece has already been connected to other pieces
+    	if(puzzle_piece_moved.puzzleGroup){
+    		let pieces = puzzle_piece_moved.puzzleGroup.pieces;
+    		for (var i = 0; i < pieces.length; i++){
+    			let piece = pieces[i];
+    			this.checkPieceNeighbors(piece);
+    		}
+    	}
+    	else {
+    		this.checkPieceNeighbors(puzzle_piece_moved);
+    	}
+    }
 
+    checkPieceNeighbors(puzzle_piece_moved) {
+        //set new location
         let row = puzzle_piece_moved.row;
         let col = puzzle_piece_moved.col;
 
@@ -191,23 +200,24 @@ class Puzzle {
         //some piece(s) were correct
         if (pieces_to_combine.length > 0) {
         	pieces_to_combine.push(puzzle_piece_moved);
-        	let puzzle_group = this.combinePieces(pieces_to_combine, puzzle_piece_moved)
-        	console.log(puzzle_group);
-        	this.movePieces(puzzle_piece_moved, puzzle_group);
+        	let puzzleGroup = this.combinePieces(pieces_to_combine, puzzle_piece_moved)
+        	console.log(puzzleGroup);
+        	this.movePieces(puzzle_piece_moved, puzzleGroup);
         }
 
     }
 
-    movePieces(mainPiece, puzzle_group) {
-    	for (var i = 0; i < puzzle_group.pieces.length; i++) {
-    		let piece = puzzle_group.pieces[i];
+    movePieces(mainPiece, puzzleGroup) {
+    	for (var i = 0; i < puzzleGroup.pieces.length; i++) {
+    		let piece = puzzleGroup.pieces[i];
 
     		let rowDiff = piece.row - mainPiece.row;
     		let colDiff = piece.col - mainPiece.col;
 
-    		let pieceDiv = document.getElementById(piece.getID());
-    		pieceDiv.style.top = (mainPiece.final_y + 100 * rowDiff) + "px"
-    		pieceDiv.style.left = (mainPiece.final_x + 100 * colDiff) + "px"
+    		let newX = mainPiece.final_x + 100 * colDiff;
+    		let newY = mainPiece.final_y + 100 * rowDiff;
+
+    		piece.move(newX,newY);
     	}
 
     }
@@ -218,7 +228,7 @@ class Puzzle {
     	var getRowColID = function(row, col) {
     		return row + "_" + col
     	};
-    	let original_puzzle_group = original_piece.puzzle_group;
+    	let original_puzzleGroup = original_piece.puzzleGroup;
     	var seen_ids = {}
         //combine all pieces, including pieces in groups
         var all_pieces_to_combine = [];
@@ -227,31 +237,31 @@ class Puzzle {
 
         for (var i = 0; i < pieces_to_combine.length; i++) {
         	let piece = pieces_to_combine[i]
-        	if (piece.puzzle_group && seen_group_ids.indexOf(piece.puzzle_group.group_id) == -1) {
-        		let puzzle_group = piece.puzzle_group;
+        	if (piece.puzzleGroup && seen_group_ids.indexOf(piece.puzzleGroup.group_id) == -1) {
+        		let puzzleGroup = piece.puzzleGroup;
 
-        		all_pieces_to_combine = all_pieces_to_combine.concat(puzzle_group.pieces);
-        		seen_group_ids.push(piece.puzzle_group.group_id);
+        		all_pieces_to_combine = all_pieces_to_combine.concat(puzzleGroup.pieces);
+        		seen_group_ids.push(piece.puzzleGroup.group_id);
         	} else {
         		all_pieces_to_combine.push(piece);
         	}
         }
 
 
-        var puzzle_group = new PuzzleGroup(all_pieces_to_combine, all_pieces_to_combine[0].getID());
+        var puzzleGroup = new PuzzleGroup(all_pieces_to_combine, all_pieces_to_combine[0].getID());
         for (var i = 0; i < all_pieces_to_combine.length; i++) {
         	let piece = all_pieces_to_combine[i];
-        	piece.puzzle_group = puzzle_group;
+        	piece.puzzleGroup = puzzleGroup;
         	seen_piece_ids[getRowColID(piece.row, piece.col)] = piece;
         }
 
-        console.log(seen_piece_ids)
-        console.log(original_puzzle_group)
+        // console.log(seen_piece_ids)
+        // console.log(original_puzzleGroup)
 
         //remove edges of original puzzle group (if available)
-        if (original_puzzle_group) {
-        	for (var i = original_puzzle_group.pieces.length - 1; i >= 0; i--) {
-        		let piece = original_puzzle_group.pieces[i];
+        if (original_puzzleGroup) {
+        	for (var i = original_puzzleGroup.pieces.length - 1; i >= 0; i--) {
+        		let piece = original_puzzleGroup.pieces[i];
         		if (seen_piece_ids[getRowColID(piece.row - 1, piece.col)]) {
         			piece.removeEdge(EdgeType.TOP);
         			this.puzzle_pieces[piece.row - 1][piece.col].removeEdge(EdgeType.BOTTOM);
@@ -292,7 +302,7 @@ class Puzzle {
         	}
         }
 
-        return puzzle_group;
+        return puzzleGroup;
     }
 
     //true if pieces are lined up correct with given orientation
@@ -302,9 +312,9 @@ class Puzzle {
         if (!(puzzle_piece1 && puzzle_piece2)) return false;
 
 
-        //check both pieces have moved
-        if (!puzzle_piece1.pieceHasMoved()) return false;
-        if (!puzzle_piece2.pieceHasMoved()) return false;
+        //check both pieces have a location
+        if (!puzzle_piece1.pieceHasLocation()) return false;
+        if (!puzzle_piece2.pieceHasLocation()) return false;
 
 
         //pixel tolerance of 2 for closeness of pieces
@@ -324,6 +334,22 @@ class Puzzle {
 
         let heightsAlmostEqual = Math.abs(y_diff) <= tolerance;
         let widthsAlmostEqual = Math.abs(x_diff) <= tolerance;
+
+        console.log(puzzle_piece1.getID());
+        console.log(puzzle_piece2.getID());
+
+        console.log("x_diff:"+x_diff);
+        console.log("y_diff"+y_diff);
+
+        console.log("pieceOnRight:"+pieceOnRight);
+        console.log("pieceOnLeft:"+pieceOnLeft);
+
+        console.log("pieceOnBottom:"+pieceOnBottom);
+        console.log("pieceOnTop:"+pieceOnTop);
+
+        console.log("heightsAlmostEqual:"+heightsAlmostEqual);
+        console.log("widthsAlmostEqual:"+widthsAlmostEqual);
+
 
 
         if (orientation == EdgeType.BOTTOM && pieceOnBottom && widthsAlmostEqual) {
@@ -357,20 +383,33 @@ class PuzzlePiece {
 		this.col = j
 		this.width = piece_width;
 		this.height = piece_height
-		this.puzzle_group = null;
+		this.puzzleGroup = null;
 	}
 
-	pieceHasMoved() {
-		return this.final_x != null && this.final_y != null;
-	}
+	move(newX,newY){
 
-	getID() {
-		return "piece row:" + this.row + " col:" + this.col;
-	}
+		let pieceDiv = document.getElementById(this.getID());
+    		// pieceDiv.style.top = () + "px"
+    		// pieceDiv.style.left = () + "px"
 
-	getImageName() {
-		return "img_" + this.row + "_" + this.col;
-	}
+    		pieceDiv.style.top = newY + "px"
+    		pieceDiv.style.left = newX + "px"
+
+    		this.final_x = newX;
+    		this.final_y = newY;
+    	}
+
+    	pieceHasLocation() {
+    		return this.final_x != null && this.final_y != null;
+    	}
+
+    	getID() {
+    		return "piece row:" + this.row + " col:" + this.col;
+    	}
+
+    	getImageName() {
+    		return "img_" + this.row + "_" + this.col;
+    	}
 
     // getBorderTypeForEdge(edge_type){
     // 	switch(edge_type){
@@ -388,7 +427,7 @@ class PuzzlePiece {
     // }
 
     removeEdge(edge_type) {
-    	console.log("remove: "+this.getID() + " : " + edge_type)
+    	console.log("remove: " + this.getID() + " : " + edge_type)
         //var edge = document.getElementById(this.getBorderID(this.getBorderTypeForEdge(edge_type)));
         //console.log(edge)
         let edgeID = this.getBorderID(edge_type);
