@@ -396,7 +396,6 @@ class Puzzle {
         }
 
         return false;
-        //if(puzzle_piece1.final_xssdsd)
     }
 }
 
@@ -442,20 +441,6 @@ class PuzzlePiece {
     	return "img_" + this.row + "_" + this.col;
     }
 
-    // getBorderTypeForEdge(edge_type){
-    // 	switch(edge_type){
-    // 		case EdgeType.TOP:
-    // 		return this.top;
-    // 		case EdgeType.BOTTOM:
-    // 		return this.bottom;
-    // 		case EdgeType.LEFT:
-    // 		return this.left;
-    // 		case EdgeType.RIGHT:
-    // 		return this.right;
-    // 		default: 
-    // 		return null;
-    // 	}
-    // }
 
     removeEdge(edge_type) {
     	console.log("remove: " + this.getID() + " : " + edge_type)
@@ -480,7 +465,7 @@ class PuzzlePiece {
         console.log(newLength);
 
     	let top = getBorders(this.top, EdgeType.TOP, img_name).replace("id=\"\"", "id=\"" + this.getBorderID(EdgeType.TOP) + "\"")
-    	let bottom = getBorders(this.bottom, EdgeType.BOTTOM, img_name).replace("id=\"\"", "id=\"" + this.getBorderID(EdgeType.TOP) + "\"")
+    	let bottom = getBorders(this.bottom, EdgeType.BOTTOM, img_name).replace("id=\"\"", "id=\"" + this.getBorderID(EdgeType.BOTTOM) + "\"")
     	let right = getBorders(this.right, EdgeType.RIGHT, img_name).replace("id=\"\"", "id=\"" + this.getBorderID(EdgeType.RIGHT) + "\"")
     	let left = getBorders(this.left, EdgeType.LEFT, img_name).replace("id=\"\"", "id=\"" + this.getBorderID(EdgeType.LEFT) + "\"")
 
@@ -488,13 +473,13 @@ class PuzzlePiece {
     	<svg xmlns="http://www.w3.org/2000/svg" height="`+newLength+`px" width = "`+newLength+`px">
         <g id="WolfiesPuzzleGenerator" transform="scale(`+scale+`)">
     	<defs>
-    	<pattern id="` + img_name + `" patternUnits="userSpaceOnUse" width="600" height="600">
+    	<pattern id="` + img_name + `" patternUnits="userSpaceOnUse" width="`+(scale*600)+`" height="`+(scale*600)+`">
     	<image xlink:href="https://ippcdn-ippawards.netdna-ssl.com/wp-content/uploads/2018/07/49-1st-SUNSET-Sara-Ronkainen-1.jpg" x="0" y="0"
     	width="600" height="600" />
     	</pattern>
     	</defs>  
         `+
-    	     // `<rect y="30" id="svg_1" height="100" width="100" x="30" stroke-width="0" stroke="#000" fill="url(#` + img_name + `)"/>`+
+    	      `<rect y="30" id="svg_1" height="100" width="100" x="30" stroke-width="0" stroke="#000" fill="url(#` + img_name + `)"/>`+
 `
     	<g id="Puzzle">
     	<g id="RowGroup">
@@ -577,18 +562,18 @@ function getBorders(border_type, edge_type, img_name) {
     }
 
     //fix coloring for non flat pieces
-    // if (border_type != BorderType.FLAT_VERTICAL && border_type != BorderType.FLAT_HORIZONTAL) {
-    //     if (edge_type == EdgeType.TOP && border_type == BorderType.HORIZONTAL1) { // && border_type == BorderType.){
-    //     	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
-    //     } else if (edge_type == EdgeType.BOTTOM && border_type == BorderType.HORIZONTAL2) {
-    //     	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
-    //     } else if (edge_type == EdgeType.RIGHT && border_type == BorderType.VERTICAL1) {
-    //     	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
-    //     } else if (edge_type == EdgeType.LEFT && border_type == BorderType.VERTICAL2) {
-    //     	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
-    //     }
+    if (border_type != BorderType.FLAT_VERTICAL && border_type != BorderType.FLAT_HORIZONTAL) {
+        if (edge_type == EdgeType.TOP && border_type == BorderType.HORIZONTAL1) { // && border_type == BorderType.){
+        	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
+        } else if (edge_type == EdgeType.BOTTOM && border_type == BorderType.HORIZONTAL2) {
+        	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
+        } else if (edge_type == EdgeType.RIGHT && border_type == BorderType.VERTICAL1) {
+        	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
+        } else if (edge_type == EdgeType.LEFT && border_type == BorderType.VERTICAL2) {
+        	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
+        }
 
-    // }
+    }
 
     return border;
 }
@@ -606,7 +591,7 @@ l
 "
 />`;
 
-const horizontal1 = `<path id=""  fill="none" stroke="black" stroke-width=".5px" d="
+const horizontal1 = `<path id=""  fill="white" stroke="black" stroke-width=".5px" d="
 M 30 30
 c 
 8.938547,-1.815642 24.20857,-2.793296 30.81937,0 
@@ -619,7 +604,7 @@ c
 6.610801,-2.793296 21.97393,-1.815642 30.81937,0                                                                                                                            
 "
 />`
-const horizontal2 = `<path id=""  fill="none" stroke="black" stroke-width=".5px" d="                                                                                                                        
+const horizontal2 = `<path id=""  fill="white" stroke="black" stroke-width=".5px" d="                                                                                                                        
 M 30 30
 c 
 8.938547,1.815642 24.20857,2.793296 30.81937,0 
@@ -633,7 +618,7 @@ c
 "
 />`
 
-const vertical1 = `<path id=""  fill="none" stroke="black" stroke-width=".5px" d="
+const vertical1 = `<path id=""  fill="white" stroke="black" stroke-width=".5px" d="
 M 30 30
 c 
 1.815642,8.938547 2.793296,24.20857 0,30.81937 
@@ -646,7 +631,7 @@ c
 2.793296,6.610801 1.815642,21.97393 0,30.81937 
 "
 />`
-const vertical2 = `<path id=""  fill="none" stroke="black" stroke-width=".5px" d="
+const vertical2 = `<path id=""  fill="white" stroke="black" stroke-width=".5px" d="
 M 30 30
 c 
 -1.815642,8.938547 -2.793296,24.20857 0,30.81937 
