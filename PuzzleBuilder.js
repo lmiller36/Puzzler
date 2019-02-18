@@ -28,8 +28,11 @@ class Puzzle {
     	let widthOfScreen = window.innerWidth;
     	let heightOfScreen = window.innerHeight;
 
-    	let width = 100;
-    	let height = 100;
+        let scale = 1.5;
+
+
+    	let width = 100 * scale;
+    	let height = 100 * scale;
 
     	for (var i = 0; i < this.vertical_pieces; i++) {
     		for (var j = 0; j < this.horizontal_pieces; j++) {
@@ -49,8 +52,7 @@ class Puzzle {
     				background-color: #transparent;
     				text-align: center;
     				border: 1px solid #transparent;
-    				width:140px;
-    				height:140px;
+
     				cursor: move;`);
 
                 //img_div.innerHTML = puzzle_piece
@@ -83,8 +85,16 @@ class Puzzle {
     buildPuzzle() {
     	const edges_in_col = this.horizontal_pieces;
     	const edges_in_row = this.vertical_pieces;
+
+        
+
     	const piece_height = (this.height + 0.0) / this.vertical_pieces;
-    	const piece_width = (this.width + 0.0) / this.horizontal_pieces;
+    	const piece_width =  (this.width + 0.0) / this.horizontal_pieces;
+
+        const scale = piece_height / 100.0;
+
+        this.piece_height = piece_height;
+        this.piece_width = piece_width;
 
     	var puzzle_pieces = [];
     	for (var i = 0; i < edges_in_row; i++) {
@@ -214,8 +224,8 @@ class Puzzle {
     		let rowDiff = piece.row - mainPiece.row;
     		let colDiff = piece.col - mainPiece.col;
 
-    		let newX = mainPiece.final_x + 100 * colDiff;
-    		let newY = mainPiece.final_y + 100 * rowDiff;
+    		let newX = mainPiece.final_x + this.piece_width  * colDiff;
+    		let newY = mainPiece.final_y + this.piece_height * rowDiff;
 
     		piece.move(newX, newY);
     	}
@@ -340,8 +350,8 @@ class Puzzle {
         let x_diff = puzzle_piece1.final_x - puzzle_piece2.final_x;
         let y_diff = puzzle_piece1.final_y - puzzle_piece2.final_y;
 
-        let width = 100;
-        let height = 100;
+        let width = this.piece_width;
+        let height = this.piece_height;
 
         let pieceOnRight = Math.abs(x_diff + width) <= tolerance;
         let pieceOnLeft = Math.abs(x_diff - width) <= tolerance;
@@ -465,21 +475,27 @@ class PuzzlePiece {
     	img_div.id = "pieceheader"
     	let img_name = this.getImageName()
 
+        let scale = this.height / 100.0;
+        let newLength = scale * 170.0;
+        console.log(newLength);
+
     	let top = getBorders(this.top, EdgeType.TOP, img_name).replace("id=\"\"", "id=\"" + this.getBorderID(EdgeType.TOP) + "\"")
     	let bottom = getBorders(this.bottom, EdgeType.BOTTOM, img_name).replace("id=\"\"", "id=\"" + this.getBorderID(EdgeType.TOP) + "\"")
     	let right = getBorders(this.right, EdgeType.RIGHT, img_name).replace("id=\"\"", "id=\"" + this.getBorderID(EdgeType.RIGHT) + "\"")
     	let left = getBorders(this.left, EdgeType.LEFT, img_name).replace("id=\"\"", "id=\"" + this.getBorderID(EdgeType.LEFT) + "\"")
 
     	var svg = `<?xml version="1.0" encoding="UTF-8"?>
-    	<svg xmlns="http://www.w3.org/2000/svg" width="170px" height="170px" >
+    	<svg xmlns="http://www.w3.org/2000/svg" height="`+newLength+`px" width = "`+newLength+`px">
+        <g id="WolfiesPuzzleGenerator" transform="scale(`+scale+`)">
     	<defs>
     	<pattern id="` + img_name + `" patternUnits="userSpaceOnUse" width="600" height="600">
     	<image xlink:href="https://ippcdn-ippawards.netdna-ssl.com/wp-content/uploads/2018/07/49-1st-SUNSET-Sara-Ronkainen-1.jpg" x="0" y="0"
     	width="600" height="600" />
     	</pattern>
     	</defs>  
-    	<rect y="30" id="svg_1" height="100" width="100" x="30" stroke-width="0" stroke="#000" fill="url(#` + img_name + `)"/>
-
+        `+
+    	     // `<rect y="30" id="svg_1" height="100" width="100" x="30" stroke-width="0" stroke="#000" fill="url(#` + img_name + `)"/>`+
+`
     	<g id="Puzzle">
     	<g id="RowGroup">
     	` +
@@ -561,18 +577,18 @@ function getBorders(border_type, edge_type, img_name) {
     }
 
     //fix coloring for non flat pieces
-    if (border_type != BorderType.FLAT_VERTICAL && border_type != BorderType.FLAT_HORIZONTAL) {
-        if (edge_type == EdgeType.TOP && border_type == BorderType.HORIZONTAL1) { // && border_type == BorderType.){
-        	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
-        } else if (edge_type == EdgeType.BOTTOM && border_type == BorderType.HORIZONTAL2) {
-        	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
-        } else if (edge_type == EdgeType.RIGHT && border_type == BorderType.VERTICAL1) {
-        	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
-        } else if (edge_type == EdgeType.LEFT && border_type == BorderType.VERTICAL2) {
-        	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
-        }
+    // if (border_type != BorderType.FLAT_VERTICAL && border_type != BorderType.FLAT_HORIZONTAL) {
+    //     if (edge_type == EdgeType.TOP && border_type == BorderType.HORIZONTAL1) { // && border_type == BorderType.){
+    //     	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
+    //     } else if (edge_type == EdgeType.BOTTOM && border_type == BorderType.HORIZONTAL2) {
+    //     	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
+    //     } else if (edge_type == EdgeType.RIGHT && border_type == BorderType.VERTICAL1) {
+    //     	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
+    //     } else if (edge_type == EdgeType.LEFT && border_type == BorderType.VERTICAL2) {
+    //     	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
+    //     }
 
-    }
+    // }
 
     return border;
 }
@@ -590,7 +606,7 @@ l
 "
 />`;
 
-const horizontal1 = `<path id=""  fill="white" stroke="black" stroke-width=".5px" d="
+const horizontal1 = `<path id=""  fill="none" stroke="black" stroke-width=".5px" d="
 M 30 30
 c 
 8.938547,-1.815642 24.20857,-2.793296 30.81937,0 
@@ -603,7 +619,7 @@ c
 6.610801,-2.793296 21.97393,-1.815642 30.81937,0                                                                                                                            
 "
 />`
-const horizontal2 = `<path id=""  fill="white" stroke="black" stroke-width=".5px" d="                                                                                                                        
+const horizontal2 = `<path id=""  fill="none" stroke="black" stroke-width=".5px" d="                                                                                                                        
 M 30 30
 c 
 8.938547,1.815642 24.20857,2.793296 30.81937,0 
@@ -617,7 +633,7 @@ c
 "
 />`
 
-const vertical1 = `<path id=""  fill="white" stroke="black" stroke-width=".5px" d="
+const vertical1 = `<path id=""  fill="none" stroke="black" stroke-width=".5px" d="
 M 30 30
 c 
 1.815642,8.938547 2.793296,24.20857 0,30.81937 
@@ -630,7 +646,7 @@ c
 2.793296,6.610801 1.815642,21.97393 0,30.81937 
 "
 />`
-const vertical2 = `<path id=""  fill="white" stroke="black" stroke-width=".5px" d="
+const vertical2 = `<path id=""  fill="none" stroke="black" stroke-width=".5px" d="
 M 30 30
 c 
 -1.815642,8.938547 -2.793296,24.20857 0,30.81937 

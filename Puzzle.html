@@ -50,6 +50,8 @@
          	    puzzle_piece.final_x = final_x;
          	    puzzle_piece.final_y = final_y;
 
+         	    // set the element's new position:
+
          	 //   if a piece is in a puzzle group, drag all pieces as well
          	 if(puzzle_piece.puzzleGroup){
          	 	let puzzleGroup = puzzle_piece.puzzleGroup;
@@ -60,13 +62,9 @@
          	 	elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
          	 }
 
-         	    // set the element's new position:
-
          	}
 
          	function closeDragElement() {
-
-
 
          		document.puzzle.checkCorrectPieces(puzzle_piece);
 
@@ -74,6 +72,7 @@
          			let puzzleGroup = puzzle_piece.puzzleGroup;
          			document.puzzle.movePieces(puzzle_piece,puzzleGroup);
          		} 
+
          		/* stop moving when mouse button is released:*/
          		document.onmouseup = null;
          		document.onmousemove = null;
@@ -81,7 +80,7 @@
          }
      </script>
      <script>
-     	document.puzzle = new Puzzle(300,300,3,3);
+     	document.puzzle = new Puzzle(600,600,4,4);
      	function solvePuzzle(){
      		// document.getElementById('topLeft').remove()
 
