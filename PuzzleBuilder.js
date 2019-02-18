@@ -62,7 +62,7 @@ class Puzzle {
                 let randomX = Math.floor(Math.random() * (widthOfScreen - width));
                 let randomY = Math.floor(Math.random() * (heightOfScreen - height));
 
-                puzzle_piece.move(randomX,randomY);
+                puzzle_piece.move(randomX, randomY);
 
             }
         }
@@ -125,18 +125,17 @@ class Puzzle {
         return puzzle_pieces;
     }
 
-    checkCorrectPieces(puzzle_piece_moved){
-    	//piece has already been connected to other pieces
-    	if(puzzle_piece_moved.puzzleGroup){
-    		let pieces = puzzle_piece_moved.puzzleGroup.pieces;
-    		for (var i = 0; i < pieces.length; i++){
-    			let piece = pieces[i];
-    			this.checkPieceNeighbors(piece);
-    		}
-    	}
-    	else {
-    		this.checkPieceNeighbors(puzzle_piece_moved);
-    	}
+    checkCorrectPieces(puzzle_piece_moved) {
+        //piece has already been connected to other pieces
+        if (puzzle_piece_moved.puzzleGroup) {
+        	let pieces = puzzle_piece_moved.puzzleGroup.pieces;
+        	for (var i = 0; i < pieces.length; i++) {
+        		let piece = pieces[i];
+        		this.checkPieceNeighbors(piece);
+        	}
+        } else {
+        	this.checkPieceNeighbors(puzzle_piece_moved);
+        }
     }
 
     checkPieceNeighbors(puzzle_piece_moved) {
@@ -151,36 +150,35 @@ class Puzzle {
         	let top_piece = this.puzzle_pieces[row - 1][col];
         	let orientation = EdgeType.TOP
         	let shouldBeConnected = this.piecesShouldBeConnected(puzzle_piece_moved, top_piece, orientation);
-        	if (shouldBeConnected) console.log("TOPS match")
-        		if (shouldBeConnected) {
+            //	if (shouldBeConnected) console.log("TOPS match")
+            if (shouldBeConnected) {
 
-        			pieces_to_combine.push(top_piece);
-        		}
-        	}
+            	pieces_to_combine.push(top_piece);
+            }
+        }
         //check bottom
         if (puzzle_piece_moved.bottom != BorderType.FLAT_HORIZONTAL) {
         	let bottom_piece = this.puzzle_pieces[row + 1][col];
         	let orientation = EdgeType.BOTTOM
         	let shouldBeConnected = this.piecesShouldBeConnected(puzzle_piece_moved, bottom_piece, orientation);
-        	if (shouldBeConnected) console.log("BOTTOMs match")
+            //if (shouldBeConnected) console.log("BOTTOMs match")
 
-        		if (shouldBeConnected) {
-        			pieces_to_combine.push(bottom_piece);
-        		}
-        	}
+            if (shouldBeConnected) {
+            	pieces_to_combine.push(bottom_piece);
+            }
+        }
 
         //check left
         if (puzzle_piece_moved.left != BorderType.FLAT_VERTICAL) {
         	let left_piece = this.puzzle_pieces[row][col - 1];
         	let orientation = EdgeType.LEFT
         	let shouldBeConnected = this.piecesShouldBeConnected(puzzle_piece_moved, left_piece, orientation);
-        	if (shouldBeConnected) console.log("Left match")
+            //if (shouldBeConnected) console.log("Left match")
 
-
-        		if (shouldBeConnected) {
-        			pieces_to_combine.push(left_piece);
-        		}
-        	}
+            if (shouldBeConnected) {
+            	pieces_to_combine.push(left_piece);
+            }
+        }
 
         //check right
 
@@ -188,14 +186,16 @@ class Puzzle {
         	let right_piece = this.puzzle_pieces[row][col + 1];
         	let orientation = EdgeType.RIGHT
         	let shouldBeConnected = this.piecesShouldBeConnected(puzzle_piece_moved, right_piece, orientation);
-        	if (shouldBeConnected) console.log("Right match")
+            //        	if (shouldBeConnected) console.log("Right match")
 
 
-        		if (shouldBeConnected) {
+            if (shouldBeConnected) {
 
-        			pieces_to_combine.push(right_piece);
-        		}
-        	}
+            	pieces_to_combine.push(right_piece);
+            }
+        }
+
+        console.log(pieces_to_combine);
 
         //some piece(s) were correct
         if (pieces_to_combine.length > 0) {
@@ -217,7 +217,7 @@ class Puzzle {
     		let newX = mainPiece.final_x + 100 * colDiff;
     		let newY = mainPiece.final_y + 100 * rowDiff;
 
-    		piece.move(newX,newY);
+    		piece.move(newX, newY);
     	}
 
     }
@@ -225,9 +225,10 @@ class Puzzle {
 
     combinePieces(pieces_to_combine, original_piece) {
 
-    	var getRowColID = function(row, col) {
-    		return row + "_" + col
-    	};
+    	// var getRowColID = function(row, col) {
+    	// 	return row + "_" + col
+    	// };
+
     	let original_puzzleGroup = original_piece.puzzleGroup;
     	var seen_ids = {}
         //combine all pieces, including pieces in groups
@@ -252,54 +253,66 @@ class Puzzle {
         for (var i = 0; i < all_pieces_to_combine.length; i++) {
         	let piece = all_pieces_to_combine[i];
         	piece.puzzleGroup = puzzleGroup;
-        	seen_piece_ids[getRowColID(piece.row, piece.col)] = piece;
+        	seen_piece_ids[piece.getID()] = "here";
         }
+
+        puzzleGroup.addSeenIDs(seen_piece_ids);
 
         // console.log(seen_piece_ids)
         // console.log(original_puzzleGroup)
 
         //remove edges of original puzzle group (if available)
+
+
+
+        var checkNeighbors = (piece) => {
+        	var checkEdge = (row, col, edge1, edge2) => {
+        		let id = PuzzlePiece.getIDWithRowCol(row,col);
+       
+                //check if neighboring piece in puzzle group
+                if (seen_piece_ids[id]) {
+                	let pieceToCheck = this.puzzle_pieces[row][col];
+
+                	//check that edges have not already been removed
+                	if(!(original_puzzleGroup  && original_puzzleGroup.isPieceInGroup(pieceToCheck))) {
+                		piece.removeEdge(edge1);
+                		this.puzzle_pieces[row][col].removeEdge(edge2);
+                	}
+                }
+            }
+
+            checkEdge(piece.row - 1, piece.col, EdgeType.TOP, EdgeType.BOTTOM);
+            checkEdge(piece.row + 1, piece.col, EdgeType.BOTTOM, EdgeType.TOP);
+            checkEdge(piece.row, piece.col - 1, EdgeType.LEFT, EdgeType.RIGHT);
+            checkEdge(piece.row, piece.col + 1, EdgeType.RIGHT, EdgeType.LEFT);
+
+            // if (seen_piece_ids[getRowColID(piece.row - 1, piece.col)]) {
+            // 	piece.removeEdge(EdgeType.TOP);
+            // 	this.puzzle_pieces[piece.row - 1][piece.col].removeEdge(EdgeType.BOTTOM);
+            // }
+            // if (seen_piece_ids[getRowColID(piece.row + 1, piece.col)]) {
+            // 	piece.removeEdge(EdgeType.BOTTOM);
+            // 	this.puzzle_pieces[piece.row + 1][piece.col].removeEdge(EdgeType.TOP);
+            // }
+            // if (seen_piece_ids[getRowColID(piece.row, piece.col - 1)]) {
+            // 	piece.removeEdge(EdgeType.LEFT);
+            // 	this.puzzle_pieces[piece.row][piece.col - 1].removeEdge(EdgeType.RIGHT);
+            // }
+            // if (seen_piece_ids[getRowColID(piece.row, piece.col + 1)]) {
+            // 	piece.removeEdge(EdgeType.RIGHT);
+            // 	this.puzzle_pieces[piece.row][piece.col + 1].removeEdge(EdgeType.LEFT);
+            // }
+        }
+
         if (original_puzzleGroup) {
         	for (var i = original_puzzleGroup.pieces.length - 1; i >= 0; i--) {
         		let piece = original_puzzleGroup.pieces[i];
-        		if (seen_piece_ids[getRowColID(piece.row - 1, piece.col)]) {
-        			piece.removeEdge(EdgeType.TOP);
-        			this.puzzle_pieces[piece.row - 1][piece.col].removeEdge(EdgeType.BOTTOM);
-        		}
-        		if (seen_piece_ids[getRowColID(piece.row + 1, piece.col)]) {
-        			piece.removeEdge(EdgeType.BOTTOM);
-        			this.puzzle_pieces[piece.row + 1][piece.col].removeEdge(EdgeType.TOP);
-        		}
-        		if (seen_piece_ids[getRowColID(piece.row, piece.col - 1)]) {
-        			piece.removeEdge(EdgeType.LEFT);
-        			this.puzzle_pieces[piece.row][piece.col - 1].removeEdge(EdgeType.RIGHT);
-        		}
-        		if (seen_piece_ids[getRowColID(piece.row, piece.col + 1)]) {
-        			piece.removeEdge(EdgeType.RIGHT);
-        			this.puzzle_pieces[piece.row][piece.col + 1].removeEdge(EdgeType.LEFT);
-        		}
+        		checkNeighbors(piece);
         	}
         }
         //remove eges of original piece
         else {
-        	let piece = original_piece;
-
-        	if (seen_piece_ids[getRowColID(piece.row - 1, piece.col)]) {
-        		piece.removeEdge(EdgeType.TOP);
-        		this.puzzle_pieces[piece.row - 1][piece.col].removeEdge(EdgeType.BOTTOM);
-        	}
-        	if (seen_piece_ids[getRowColID(piece.row + 1, piece.col)]) {
-        		piece.removeEdge(EdgeType.BOTTOM);
-        		this.puzzle_pieces[piece.row + 1][piece.col].removeEdge(EdgeType.TOP);
-        	}
-        	if (seen_piece_ids[getRowColID(piece.row, piece.col - 1)]) {
-        		piece.removeEdge(EdgeType.LEFT);
-        		this.puzzle_pieces[piece.row][piece.col - 1].removeEdge(EdgeType.RIGHT);
-        	}
-        	if (seen_piece_ids[getRowColID(piece.row, piece.col + 1)]) {
-        		piece.removeEdge(EdgeType.RIGHT);
-        		this.puzzle_pieces[piece.row][piece.col + 1].removeEdge(EdgeType.LEFT);
-        	}
+        	checkNeighbors(original_piece);
         }
 
         return puzzleGroup;
@@ -316,6 +329,10 @@ class Puzzle {
         if (!puzzle_piece1.pieceHasLocation()) return false;
         if (!puzzle_piece2.pieceHasLocation()) return false;
 
+       	//both pieces in same puzzle group
+       	if(puzzle_piece1.puzzleGroup && puzzle_piece2.puzzleGroup 
+       		&& puzzle_piece1.puzzleGroup.group_id ==  puzzle_piece2.puzzleGroup.group_id)
+       		return false;
 
         //pixel tolerance of 2 for closeness of pieces
         let tolerance = 4;
@@ -335,20 +352,20 @@ class Puzzle {
         let heightsAlmostEqual = Math.abs(y_diff) <= tolerance;
         let widthsAlmostEqual = Math.abs(x_diff) <= tolerance;
 
-        console.log(puzzle_piece1.getID());
-        console.log(puzzle_piece2.getID());
+        // console.log(puzzle_piece1.getID());
+        // console.log(puzzle_piece2.getID());
 
-        console.log("x_diff:"+x_diff);
-        console.log("y_diff"+y_diff);
+        // console.log("x_diff:"+x_diff);
+        // console.log("y_diff"+y_diff);
 
-        console.log("pieceOnRight:"+pieceOnRight);
-        console.log("pieceOnLeft:"+pieceOnLeft);
+        // console.log("pieceOnRight:"+pieceOnRight);
+        // console.log("pieceOnLeft:"+pieceOnLeft);
 
-        console.log("pieceOnBottom:"+pieceOnBottom);
-        console.log("pieceOnTop:"+pieceOnTop);
+        // console.log("pieceOnBottom:"+pieceOnBottom);
+        // console.log("pieceOnTop:"+pieceOnTop);
 
-        console.log("heightsAlmostEqual:"+heightsAlmostEqual);
-        console.log("widthsAlmostEqual:"+widthsAlmostEqual);
+        // console.log("heightsAlmostEqual:"+heightsAlmostEqual);
+        // console.log("widthsAlmostEqual:"+widthsAlmostEqual);
 
 
 
@@ -386,30 +403,34 @@ class PuzzlePiece {
 		this.puzzleGroup = null;
 	}
 
-	move(newX,newY){
+	move(newX, newY) {
 
 		let pieceDiv = document.getElementById(this.getID());
-    		// pieceDiv.style.top = () + "px"
-    		// pieceDiv.style.left = () + "px"
+        // pieceDiv.style.top = () + "px"
+        // pieceDiv.style.left = () + "px"
 
-    		pieceDiv.style.top = newY + "px"
-    		pieceDiv.style.left = newX + "px"
+        pieceDiv.style.top = newY + "px"
+        pieceDiv.style.left = newX + "px"
 
-    		this.final_x = newX;
-    		this.final_y = newY;
-    	}
+        this.final_x = newX;
+        this.final_y = newY;
+    }
 
-    	pieceHasLocation() {
-    		return this.final_x != null && this.final_y != null;
-    	}
+    pieceHasLocation() {
+    	return this.final_x != null && this.final_y != null;
+    }
 
-    	getID() {
-    		return "piece row:" + this.row + " col:" + this.col;
-    	}
+    static getIDWithRowCol(row,col){
+    	return "piece row:" + row + " col:" + col;
+    }
 
-    	getImageName() {
-    		return "img_" + this.row + "_" + this.col;
-    	}
+    getID() {
+    	return PuzzlePiece.getIDWithRowCol(this.row,this.col);
+    }
+
+    getImageName() {
+    	return "img_" + this.row + "_" + this.col;
+    }
 
     // getBorderTypeForEdge(edge_type){
     // 	switch(edge_type){
@@ -627,5 +648,19 @@ class PuzzleGroup {
 	constructor(puzzle_pieces, group_id) {
 		this.pieces = puzzle_pieces;
 		this.group_id = group_id;
+	}
+
+	addSeenIDs(seen_piece_ids) {
+		this.seen_piece_ids = seen_piece_ids;
+	}
+
+	isPieceInGroup(piece) {
+		if (!this.seen_piece_ids) return null;
+		if(!piece) return false;
+		let id = piece.getID();
+
+		if (this.seen_piece_ids[id]) return true;
+
+		return false;
 	}
 }
