@@ -48,7 +48,7 @@ class Puzzle {
     			img_div.appendChild(puzzle_piece_svg);
     			img_div.setAttribute("style",
     				`position: absolute;
-    				z-index: 9;
+    				
     				background-color: #transparent;
     				text-align: center;
     				border: 1px solid #transparent;
@@ -88,8 +88,8 @@ class Puzzle {
 
         
 
-    	const piece_height = (this.height + 0.0) / this.vertical_pieces;
-    	const piece_width =  (this.width + 0.0) / this.horizontal_pieces;
+    	const piece_height = Math.floor((this.height + 0.0) / this.vertical_pieces);
+    	const piece_width =  Math.floor((this.width + 0.0) / this.horizontal_pieces);
 
         const scale = piece_height / 100.0;
 
@@ -127,7 +127,7 @@ class Puzzle {
                 	right = this.randomVertical();
                 }
 
-                let puzzle_piece = new PuzzlePiece(top, bottom, left, right, i, j, piece_height, piece_width);
+                let puzzle_piece = new PuzzlePiece(top, bottom, left, right, i, j, piece_height, piece_width,this.vertical_pieces, this.horizontal_pieces);
                 row.push(puzzle_piece)
             }
             puzzle_pieces.push(row);
@@ -400,7 +400,7 @@ class Puzzle {
 }
 
 class PuzzlePiece {
-	constructor(top_shape, bottom_shape, left_shape, right_shape, i, j, piece_height, piece_width) {
+	constructor(top_shape, bottom_shape, left_shape, right_shape, i, j, piece_height, piece_width,vertical_pieces, horizontal_pieces) {
 		this.top = top_shape;
 		this.bottom = bottom_shape;
 		this.right = right_shape;
@@ -410,6 +410,11 @@ class PuzzlePiece {
 		this.width = piece_width;
 		this.height = piece_height
 		this.puzzleGroup = null;
+        this.vertical_pieces = vertical_pieces;
+        this.horizontal_pieces = horizontal_pieces;
+
+        // console.log(piece_width);
+        // console.log(height);
 	}
 
 	move(newX, newY) {
@@ -461,8 +466,8 @@ class PuzzlePiece {
     	let img_name = this.getImageName()
 
         let scale = this.height / 100.0;
+        console.log(scale);
         let newLength = scale * 170.0;
-        console.log(newLength);
 
     	let top = getBorders(this.top, EdgeType.TOP, img_name).replace("id=\"\"", "id=\"" + this.getBorderID(EdgeType.TOP) + "\"")
     	let bottom = getBorders(this.bottom, EdgeType.BOTTOM, img_name).replace("id=\"\"", "id=\"" + this.getBorderID(EdgeType.BOTTOM) + "\"")
@@ -473,9 +478,9 @@ class PuzzlePiece {
     	<svg xmlns="http://www.w3.org/2000/svg" height="`+newLength+`px" width = "`+newLength+`px">
         <g id="WolfiesPuzzleGenerator" transform="scale(`+scale+`)">
     	<defs>
-    	<pattern id="` + img_name + `" patternUnits="userSpaceOnUse" width="`+(scale*600)+`" height="`+(scale*600)+`">
+    	<pattern id="` + img_name + `" patternUnits="userSpaceOnUse" width="`+(200)+`" height="`+(200)+`">
     	<image xlink:href="https://ippcdn-ippawards.netdna-ssl.com/wp-content/uploads/2018/07/49-1st-SUNSET-Sara-Ronkainen-1.jpg" x="0" y="0"
-    	width="600" height="600" />
+    	width="`+(130*this.horizontal_pieces)+`" height="`+(130*this.vertical_pieces)+`" />
     	</pattern>
     	</defs>  
         `+
@@ -500,7 +505,7 @@ class PuzzlePiece {
     	</svg>`
 
         //adjust picture location
-        svg = svg.replace("x=\"0\" y=\"0\"", "x=\"" + (this.col * this.width * -1) + "\" y=\"" + (this.row * this.height * -1) + "\"");
+        svg = svg.replace("x=\"0\" y=\"0\"", "x=\"" + (this.col * 100 * -1) + "\" y=\"" + (this.row * 100 * -1) + "\"");
         img_div.innerHTML = svg
         return img_div;
     }
