@@ -62,10 +62,10 @@ class Puzzle {
 
                 /**randomize location**/
 
-                let randomX = Math.floor(Math.random() * (widthOfScreen - width));
-                let randomY = Math.floor(Math.random() * (heightOfScreen - height));
+                // let randomX = Math.floor(Math.random() * (widthOfScreen - width));
+                // let randomY = Math.floor(Math.random() * (heightOfScreen - height));
 
-                puzzle_piece.move(randomX, randomY);
+                //puzzle_piece.move(randomX, randomY);
 
             }
         }
@@ -74,13 +74,13 @@ class Puzzle {
 
     randomHorizontal() {
     	let arr = [BorderType.HORIZONTAL1, BorderType.HORIZONTAL2]
-    	return arr[0]//Math.floor(Math.random() * arr.length)];
+    	return arr[Math.floor(Math.random() * arr.length)];
     }
 
 
     randomVertical() {
     	let arr = [BorderType.VERTICAL1, BorderType.VERTICAL2]
-    	return arr[0]//Math.floor(Math.random() * arr.length)];
+    	return arr[Math.floor(Math.random() * arr.length)];
     }
 
     buildPuzzle() {
@@ -206,7 +206,7 @@ class Puzzle {
             }
         }
 
-        console.log(pieces_to_combine);
+       // console.log(pieces_to_combine);
 
         //some piece(s) were correct
         if (pieces_to_combine.length > 0) {
@@ -449,7 +449,7 @@ class PuzzlePiece {
 
 
     removeEdge(edge_type) {
-    	console.log("remove: " + this.getID() + " : " + edge_type)
+    	//console.log("remove: " + this.getID() + " : " + edge_type)
         //var edge = document.getElementById(this.getBorderID(this.getBorderTypeForEdge(edge_type)));
         //console.log(edge)
         let edgeID = this.getBorderID(edge_type);
@@ -467,7 +467,7 @@ class PuzzlePiece {
     	let img_name = this.getImageName()
 
         let scale = this.height / 100.0;
-        console.log(scale);
+       // console.log(scale);
         let newLength = scale * 170.0;
 
     	let top = getBorders(this.top, EdgeType.TOP, img_name).replace("id=\"\"", "id=\"" + this.getBorderID(EdgeType.TOP) + "\"")
@@ -573,8 +573,6 @@ function getBorders(border_type, edge_type, img_name) {
     if (border_type != BorderType.FLAT_VERTICAL && border_type != BorderType.FLAT_HORIZONTAL) {
         if (edge_type == EdgeType.TOP && border_type == BorderType.HORIZONTAL1) { // && border_type == BorderType.){
         	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
-            border = border.replace("none","block");
-            console.log(border)
         } else if (edge_type == EdgeType.BOTTOM && border_type == BorderType.HORIZONTAL2) {
         	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
         } else if (edge_type == EdgeType.RIGHT && border_type == BorderType.VERTICAL1) {
@@ -585,10 +583,6 @@ function getBorders(border_type, edge_type, img_name) {
 
     }
 
-    if(border.indexOf("white") != -1){
-        var border2 = border.replace("white","none")
-        border = border + border2;
-    }
 
     return border;
 }
@@ -606,7 +600,7 @@ l
 "
 />`;
 
-const horizontal1 = `<path id=""  fill="white" display="none" stroke="black" stroke-width=".5px" d="
+const horizontal1 = `<path id=""  fill="white" stroke="black" stroke-width=".5px" d="
 M 30 30
 c 
 8.938547,-1.815642 24.20857,-2.793296 30.81937,0 
