@@ -21,6 +21,7 @@ class Puzzle {
     	this.horizontal_pieces = horizontal_pieces;
     	this.puzzle_pieces = this.buildPuzzle();
 
+
     	this.addPuzzlePiecesToPuzzle();
     }
 
@@ -48,7 +49,7 @@ class Puzzle {
     			img_div.appendChild(puzzle_piece_svg);
     			img_div.setAttribute("style",
     				`position: absolute;
-    				
+    				z-index: 9;
     				background-color: #transparent;
     				text-align: center;
     				border: 1px solid #transparent;
@@ -73,13 +74,13 @@ class Puzzle {
 
     randomHorizontal() {
     	let arr = [BorderType.HORIZONTAL1, BorderType.HORIZONTAL2]
-    	return arr[Math.floor(Math.random() * arr.length)];
+    	return arr[0]//Math.floor(Math.random() * arr.length)];
     }
 
 
     randomVertical() {
     	let arr = [BorderType.VERTICAL1, BorderType.VERTICAL2]
-    	return arr[Math.floor(Math.random() * arr.length)];
+    	return arr[0]//Math.floor(Math.random() * arr.length)];
     }
 
     buildPuzzle() {
@@ -474,6 +475,8 @@ class PuzzlePiece {
     	let right = getBorders(this.right, EdgeType.RIGHT, img_name).replace("id=\"\"", "id=\"" + this.getBorderID(EdgeType.RIGHT) + "\"")
     	let left = getBorders(this.left, EdgeType.LEFT, img_name).replace("id=\"\"", "id=\"" + this.getBorderID(EdgeType.LEFT) + "\"")
 
+let imageSubmitted = document.getElementById("image").value;
+
     	var svg = `<?xml version="1.0" encoding="UTF-8"?>
     	<svg xmlns="http://www.w3.org/2000/svg" height="`+newLength+`px" width = "`+newLength+`px">
         <g id="WolfiesPuzzleGenerator" transform="scale(`+scale+`)">
@@ -570,6 +573,8 @@ function getBorders(border_type, edge_type, img_name) {
     if (border_type != BorderType.FLAT_VERTICAL && border_type != BorderType.FLAT_HORIZONTAL) {
         if (edge_type == EdgeType.TOP && border_type == BorderType.HORIZONTAL1) { // && border_type == BorderType.){
         	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
+            border = border.replace("none","block");
+            console.log(border)
         } else if (edge_type == EdgeType.BOTTOM && border_type == BorderType.HORIZONTAL2) {
         	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
         } else if (edge_type == EdgeType.RIGHT && border_type == BorderType.VERTICAL1) {
@@ -578,6 +583,11 @@ function getBorders(border_type, edge_type, img_name) {
         	border = border.replace("fill=\"white\"", "fill=\"url(#" + img_name + ")\"");
         }
 
+    }
+
+    if(border.indexOf("white") != -1){
+        var border2 = border.replace("white","none")
+        border = border + border2;
     }
 
     return border;
@@ -596,7 +606,7 @@ l
 "
 />`;
 
-const horizontal1 = `<path id=""  fill="white" stroke="black" stroke-width=".5px" d="
+const horizontal1 = `<path id=""  fill="white" display="none" stroke="black" stroke-width=".5px" d="
 M 30 30
 c 
 8.938547,-1.815642 24.20857,-2.793296 30.81937,0 
